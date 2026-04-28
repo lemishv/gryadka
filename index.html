@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Грядка</title>
+
+<link rel="manifest" href='data:application/json,{"name":"Грядка","short_name":"Грядка","start_url":".","display":"standalone","background_color":"%230a0a0a","theme_color":"%230a0a0a","orientation":"portrait","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 fill=%22%230a0a0a%22/%3E%3Cline x1=%2240%22 y1=%22146%22 x2=%22152%22 y2=%22146%22 stroke=%22%23d4a574%22 stroke-width=%224%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M 96 146 L 96 70%22 stroke=%22%23d4a574%22 stroke-width=%224%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3Cpath d=%22M 96 96 Q 73 85, 65 62%22 stroke=%22%23d4a574%22 stroke-width=%224%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M 96 84 Q 119 73, 127 50%22 stroke=%22%23d4a574%22 stroke-width=%224%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-2: #1c1c1c;
+    --text: #f0eee6;
+    --text-dim: #8a8478;
+    --text-faint: #4a4640;
+    --accent: #d4a574;
+    --border: #2a2825;
+    --danger: #c66;
+  }
+
+  html, body {
+    height: 100%; width: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 300;
+    overscroll-behavior: none;
+  }
+  body { position: fixed; inset: 0; }
+  input, textarea { user-select: text; -webkit-user-select: text; }
+
+  .app { display: flex; flex-direction: column; height: 100%; width: 100%; }
+
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: max(env(safe-area-inset-top), 14px) 18px 0;
+    height: calc(56px + max(env(safe-area-inset-top), 14px));
+    flex-shrink: 0; gap: 10px;
+  }
+  .header-title {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-weight: 300; font-size: 1.1rem;
+    color: var(--text); letter-spacing: 0.02em;
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    text-align: center;
+  }
+  .header-title .period { color: var(--accent); }
+  .header-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--text-dim); width: 38px; height: 38px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .header-btn:active { color: var(--text); border-color: var(--text-dim); transform: scale(0.95); }
+  .header-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .screen { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+  .screen.hidden { display: none; }
+  .hidden { display: none !important; }
+
+  /* HOME */
+  .list-wrap { padding: 12px 16px 24px; }
+  .card-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .card-row:active { background: var(--surface-2); transform: scale(0.99); }
+  .card-row-head {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .card-row-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 400; font-size: 1.1rem;
+    color: var(--text);
+    flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .card-row-meta {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+  }
+  .card-row-arrow {
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .mini-counters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .mini-counter {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 4px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    min-width: 0;
+  }
+  .mini-counter-name {
+    font-size: 0.58rem;
+    color: var(--text-faint);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    width: 100%; text-align: center;
+  }
+  .mini-counter-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem; font-weight: 400;
+    color: var(--accent);
+    font-feature-settings: 'tnum';
+  }
+
+  .add-card-btn {
+    width: 100%;
+    padding: 18px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    color: var(--text-dim);
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 6px;
+  }
+  .add-card-btn:active { color: var(--text); border-color: var(--text-dim); }
+
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: var(--text-faint);
+    font-family: 'Fraunces', serif; font-style: italic;
+  }
+
+  /* CARD DETAIL */
+  .meta-block {
+    margin: 12px 16px 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .meta-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.92rem;
+  }
+  .meta-row:first-of-type { border-top: none; padding-top: 4px; }
+  .meta-row:last-of-type { padding-bottom: 4px; }
+  .meta-icon {
+    color: var(--text-faint);
+    flex-shrink: 0; width: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .meta-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .meta-label {
+    color: var(--text-faint);
+    font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    width: 92px; flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .meta-value { color: var(--text); word-break: break-word; flex: 1; }
+  .meta-value.empty { color: var(--text-faint); font-style: italic; }
+  .meta-value a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); }
+  .meta-value .unit { color: var(--text-faint); margin-left: 4px; font-size: 0.85em; }
+
+  .meta-edit-row {
+    display: flex; justify-content: flex-end; padding: 0 16px 0;
+  }
+  .text-btn {
+    background: none; border: none;
+    color: var(--text-dim);
+    font-family: inherit; font-size: 0.8rem;
+    cursor: pointer; padding: 6px 10px;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+  .text-btn:active { color: var(--text); }
+
+  .counters-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 4px 16px 24px;
+  }
+  .counter-tile {
+    aspect-ratio: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex; flex-direction: column;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
+  }
+  .counter-tile.pulsing { transform: scale(0.97); }
+  .counter-tile .glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at center, var(--tile-color, var(--accent)) 0%, transparent 65%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    mix-blend-mode: soft-light;
+  }
+  .counter-tile.pulsing .glow { opacity: 0.5; transition: opacity 0.05s; }
+  .counter-tile-header {
+    display: flex; align-items: center; gap: 6px;
+    z-index: 1;
+    padding-right: 32px;
+  }
+  .counter-tile-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--tile-color, var(--accent));
+    flex-shrink: 0;
+  }
+  .counter-tile-name {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tile-menu-btn {
+    position: absolute; top: 8px; right: 8px;
+    width: 30px; height: 30px;
+    background: transparent; border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    z-index: 3;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+  }
+  .tile-menu-btn:active { background: var(--surface-2); color: var(--text); }
+  .counter-tile-value {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(2.6rem, 10vw, 3.6rem);
+    line-height: 1;
+    color: var(--tile-color, var(--accent));
+    margin-top: auto;
+    align-self: flex-end;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
+    z-index: 1;
+    letter-spacing: -0.03em;
+  }
+  .counter-tile-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    align-self: flex-end;
+    margin-top: 2px;
+    z-index: 1;
+    text-align: right;
+  }
+  .counter-tile-corr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--accent);
+    opacity: 0.7;
+    align-self: flex-end;
+    z-index: 1;
+    text-align: right;
+  }
+  .counter-tile-hint {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    align-self: flex-end;
+    z-index: 1;
+  }
+
+  /* ANALYTICS */
+  .analytics-wrap { padding: 8px 16px 24px; }
+  .ana-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .ana-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .ana-variety {
+    border-top: 1px solid var(--border);
+    padding: 12px 0;
+  }
+  .ana-variety:first-of-type { border-top: none; padding-top: 0; }
+  .ana-variety:last-of-type { padding-bottom: 0; }
+  .ana-variety-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .ana-variety-name .fields-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    margin-left: 8px;
+    font-style: normal;
+  }
+  .ana-stat-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 3px 0;
+    font-size: 0.88rem;
+  }
+  .ana-stat-label { color: var(--text-dim); }
+  .ana-stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    font-feature-settings: 'tnum';
+  }
+  .ana-stat-percent {
+    color: var(--accent);
+    font-size: 0.78rem;
+    margin-left: 6px;
+  }
+  .ana-total {
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  .ana-total .ana-stat-label { color: var(--text); font-weight: 400; }
+  .ana-total .ana-stat-value { color: var(--accent); }
+
+  /* OVERLAYS */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 50; display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .overlay.visible { opacity: 1; pointer-events: auto; }
+  #overlay-confirm { z-index: 100; }
+  #overlay-confirm .modal { max-width: 360px; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    width: 100%; max-width: 480px;
+    max-height: 90vh; overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-bottom: max(env(safe-area-inset-bottom), 8px);
+  }
+  .overlay.visible .modal { transform: translateY(0); }
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--text-faint); border-radius: 2px;
+    margin: 12px auto 8px;
+  }
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 22px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-weight: 300; font-size: 1.3rem;
+  }
+  .modal-close {
+    background: none; border: none; color: var(--text-dim);
+    cursor: pointer; padding: 6px; font-family: inherit; font-size: 1.05rem;
+  }
+
+  .form-group { padding: 12px 22px; }
+  .form-label {
+    display: block; font-size: 0.7rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .form-hint {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .form-input {
+    width: 100%; background: var(--surface-2);
+    border: 1px solid var(--border); color: var(--text);
+    padding: 11px 13px; border-radius: 8px;
+    font-family: inherit; font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .form-input:focus { border-color: var(--text-dim); }
+
+  .form-row { display: flex; gap: 8px; }
+  .form-row .form-input { flex: 1; }
+  .form-row .form-input.unit { flex: 0 0 80px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+  .swatch {
+    aspect-ratio: 1; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.2s ease;
+  }
+  .swatch.selected { border-color: var(--text); transform: scale(1.12); }
+
+  .sounds { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sound-chip {
+    padding: 7px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim); border-radius: 18px;
+    cursor: pointer; font-family: inherit;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
+  }
+  .sound-chip.selected {
+    color: var(--text); border-color: var(--text-dim);
+    background: var(--surface);
+  }
+
+  .toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    gap: 16px;
+  }
+  .toggle-label { font-size: 0.92rem; color: var(--text); }
+  .toggle-sub {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .toggle {
+    position: relative; width: 44px; height: 24px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px; cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px;
+    background: var(--text-faint);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle.on::after { left: 22px; background: var(--bg); }
+
+  .modal-section-title {
+    padding: 18px 22px 6px;
+    font-size: 0.7rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+  .modal-section-title:first-child { border-top: none; margin-top: 0; }
+
+  .menu-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .menu-item:active { background: var(--surface-2); }
+  .menu-item .item-color { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .menu-item .item-name {
+    flex: 1; font-size: 0.93rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .menu-item .item-arrow { color: var(--text-faint); font-size: 1rem; }
+
+  .modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    flex: 1; min-width: 100px;
+    padding: 12px 14px;
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px;
+    cursor: pointer; font-family: inherit;
+    font-size: 0.88rem; transition: all 0.2s ease;
+  }
+  .btn:active { background: var(--surface-2); transform: scale(0.98); }
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent); font-weight: 500;
+  }
+  .btn-primary:active { opacity: 0.85; background: var(--accent); }
+  .btn-danger {
+    color: var(--danger); border-color: rgba(204, 102, 102, 0.3);
+  }
+  .btn-danger:active { background: rgba(204, 102, 102, 0.1); }
+  .btn-full { flex: 1 1 100%; }
+
+  /* Tile-menu number stepper */
+  .stepper {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .stepper-btn {
+    width: 36px; height: 36px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .stepper-btn:active { background: var(--surface); }
+  .stepper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    outline: none;
+    min-width: 0;
+  }
+
+  .computed-preview {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 22px 4px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    text-align: center;
+  }
+  .computed-preview b { color: var(--accent); font-weight: 500; }
+
+  .toast {
+    position: fixed;
+    bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    color: var(--text);
+    font-size: 0.85rem;
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="header">
+    <button class="header-btn hidden" id="btn-back" aria-label="Назад">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div style="width:38px" id="left-spacer"></div>
+    <div class="header-title" id="header-title">грядка<span class="period">.</span></div>
+    <button class="header-btn" id="btn-menu" aria-label="Меню">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>
+    </button>
+  </header>
+
+  <div class="screen" id="screen-list">
+    <div class="list-wrap" id="cards-container"></div>
+  </div>
+
+  <div class="screen hidden" id="screen-card">
+    <div class="meta-block" id="meta-block"></div>
+    <div class="meta-edit-row">
+      <button class="text-btn" id="btn-edit-meta">редагувати опис</button>
+    </div>
+    <div class="counters-grid" id="counters-grid"></div>
+  </div>
+
+  <div class="screen hidden" id="screen-analytics">
+    <div class="analytics-wrap" id="analytics-wrap"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-meta">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title">Опис поля</div><button class="modal-close" data-close>✕</button></div>
+    <div class="form-group">
+      <label class="form-label">Назва</label>
+      <input type="text" class="form-input" id="meta-name" maxlength="60">
+    </div>
+    <div id="meta-fields"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary btn-full" id="btn-meta-save">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-menu">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="menu-title">Меню</div><button class="modal-close" data-close>✕</button></div>
+    <div id="menu-body"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-counter">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title">Матеріал</div><button class="modal-close" data-close>✕</button></div>
+    <div class="form-group">
+      <label class="form-label">Назва</label>
+      <input type="text" class="form-input" id="counter-name" maxlength="40">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Колір</label>
+      <div class="swatches" id="counter-swatches"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Звук</label>
+      <div class="sounds" id="counter-sounds"></div>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">Вібрація</span>
+      <div class="toggle" id="counter-vibrate"></div>
+    </div>
+    <div class="modal-section-title">Одиниця виміру</div>
+    <div class="form-group">
+      <label class="form-label">Підпис одиниці</label>
+      <input type="text" class="form-input" id="counter-unit-label" placeholder="кг, л, шт..." maxlength="10">
+      <div class="form-hint">залиш порожнім, щоб не рахувати в одиницях</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Скільки в одній одиниці</label>
+      <input type="number" step="any" class="form-input" id="counter-unit-value" placeholder="напр. 12100">
+      <div class="form-hint">наприклад, трейлер = 12100 кг</div>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Це насіння</div>
+        <div class="toggle-sub">входить у підсумок по сортах</div>
+      </div>
+      <div class="toggle" id="counter-role-seed"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="btn-counter-delete">Видалити</button>
+      <button class="btn btn-primary" id="btn-counter-save">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-tile">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="tile-title">Матеріал</div><button class="modal-close" data-close>✕</button></div>
+    <div class="form-group">
+      <label class="form-label">Кількість</label>
+      <div class="stepper">
+        <button class="stepper-btn" id="tile-minus">−</button>
+        <input type="number" id="tile-count" step="1">
+        <button class="stepper-btn" id="tile-plus">+</button>
+      </div>
+    </div>
+    <div class="form-group" id="tile-correction-group">
+      <label class="form-label">Корекція <span id="tile-correction-unit"></span></label>
+      <input type="number" step="any" class="form-input" id="tile-correction" placeholder="0">
+      <div class="form-hint">додатне — додати, від'ємне — забрати (повернення)</div>
+    </div>
+    <div class="computed-preview" id="tile-preview"></div>
+    <div class="modal-footer">
+      <button class="btn" id="btn-tile-settings">Налаштування</button>
+      <button class="btn btn-danger" id="btn-tile-reset">Скинути</button>
+      <button class="btn btn-primary btn-full" id="btn-tile-save">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-confirm">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="form-group" style="padding:24px 22px 12px;text-align:center">
+      <div id="confirm-message" style="font-size:1rem;color:var(--text);line-height:1.45"></div>
+    </div>
+    <div class="modal-footer" style="padding-top:14px">
+      <button class="btn" id="confirm-cancel">Скасувати</button>
+      <button class="btn btn-danger" id="confirm-ok">Підтвердити</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+const KEY = 'lichylnyk.v2';
+const Store = {
+  _hasLS: (() => { try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); return true; } catch(e) { return false; }})(),
+  _mem: {},
+  get(k) { try { if (this._hasLS) { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }} catch(e){} return this._mem[k] || null; },
+  set(k, v) { try { if (this._hasLS) localStorage.setItem(k, JSON.stringify(v)); else this._mem[k] = v; } catch(e) { this._mem[k] = v; }}
+};
+
+let audioCtx = null;
+function ac() {
+  if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (C) audioCtx = new C(); }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function tone(f, d, t, g) {
+  const c = ac(); if (!c) return;
+  const o = c.createOscillator(), gn = c.createGain();
+  o.connect(gn); gn.connect(c.destination);
+  o.type = t || 'sine'; o.frequency.value = f;
+  const t0 = c.currentTime;
+  gn.gain.setValueAtTime(0, t0);
+  gn.gain.linearRampToValueAtTime(g || 0.18, t0 + 0.005);
+  gn.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  o.start(t0); o.stop(t0 + d + 0.02);
+}
+const SOUNDS = {
+  click:  { name: 'клік',    play: () => tone(820, 0.05, 'sine', 0.15) },
+  tick:   { name: 'тік',     play: () => tone(1500, 0.025, 'square', 0.08) },
+  bell:   { name: 'дзвоник', play: () => { tone(1320, 0.5, 'sine', 0.15); setTimeout(() => tone(1980, 0.4, 'sine', 0.07), 8); }},
+  pop:    { name: 'поп',     play: () => tone(180, 0.08, 'triangle', 0.25) },
+  drop:   { name: 'крапля',  play: () => { tone(900, 0.15, 'sine', 0.2); setTimeout(() => tone(1400, 0.1, 'sine', 0.1), 30); }},
+  wood:   { name: 'дерево',  play: () => tone(280, 0.08, 'triangle', 0.22) },
+  none:   { name: 'тиша',    play: () => {} }
+};
+
+const COLOURS = ['#d4a574','#c66161','#6cb085','#7c89c4','#c8a040','#c47b56','#95a386','#b87da6'];
+
+function id() { return Math.random().toString(36).slice(2, 10); }
+
+function defaultSchema() {
+  return {
+    metaFields: [
+      { id: 'loc',  label: 'Локація',      type: 'url',    icon: 'pin' },
+      { id: 'date', label: 'Дата посадки', type: 'date',   icon: 'calendar' },
+      { id: 'area', label: 'Площа',        type: 'number', unit: 'га', icon: 'area' },
+      { id: 'seed', label: 'Сорт насіння', type: 'text',   icon: 'seed' }
+    ],
+    counters: [
+      { id: 'trailer', name: 'Трейлери',  colour: COLOURS[0], sound: 'click', vibrate: true,
+        unitValue: 12100, unitLabel: 'кг', role: 'seed' },
+      { id: 'fert1',   name: 'Добриво 1', colour: COLOURS[2], sound: 'drop',  vibrate: true,
+        unitValue: null,  unitLabel: 'л',  role: 'other' },
+      { id: 'fert2',   name: 'Добриво 2', colour: COLOURS[3], sound: 'drop',  vibrate: true,
+        unitValue: null,  unitLabel: 'л',  role: 'other' },
+      { id: 'days',    name: 'Днів',       colour: COLOURS[4], sound: 'wood',  vibrate: true,
+        unitValue: null,  unitLabel: null, role: 'other' }
+    ]
+  };
+}
+
+function newCard(schema, name) {
+  const counts = {}, corrections = {}, meta = {};
+  schema.counters.forEach(c => { counts[c.id] = 0; corrections[c.id] = 0; });
+  schema.metaFields.forEach(f => meta[f.id] = '');
+  return { id: id(), name: name || 'Нове поле', meta, counts, corrections, events: [] };
+}
+
+function defaultState() {
+  const schema = defaultSchema();
+  const card = newCard(schema, 'Перше поле');
+  return { schema, cards: [card], activeCardId: card.id, logEnabled: false, areaUnit: 'га' };
+}
+
+/* MIGRATION */
+function migrate(s) {
+  if (!s.schema) return defaultState();
+  s.schema.counters.forEach(c => {
+    if (typeof c.unitValue === 'undefined') c.unitValue = null;
+    if (typeof c.unitLabel === 'undefined') c.unitLabel = null;
+    if (typeof c.role === 'undefined') c.role = 'other';
+  });
+  s.schema.metaFields.forEach(f => {
+    if (f.id === 'area' && f.type === 'text') {
+      f.type = 'number';
+      f.unit = f.unit || 'га';
+    }
+  });
+  s.cards.forEach(card => {
+    if (!card.corrections) card.corrections = {};
+    s.schema.counters.forEach(c => {
+      if (typeof card.corrections[c.id] === 'undefined') card.corrections[c.id] = 0;
+    });
+  });
+  if (typeof s.logEnabled === 'undefined') s.logEnabled = false;
+  if (typeof s.areaUnit === 'undefined') s.areaUnit = 'га';
+  return s;
+}
+
+let state = Store.get(KEY);
+state = (state && state.schema && state.cards) ? migrate(state) : defaultState();
+
+let view = 'list';
+function save() { Store.set(KEY, state); }
+function activeCard() { return state.cards.find(c => c.id === state.activeCardId); }
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+function esc(s) { return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+function fmtInt(n) {
+  if (!isFinite(n)) return '0';
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+function fmtNum(n, decimals) {
+  if (!isFinite(n)) return '0';
+  if (Math.abs(n) >= 100) return fmtInt(n);
+  const d = decimals == null ? 1 : decimals;
+  return (Math.round(n * Math.pow(10, d)) / Math.pow(10, d)).toString().replace('.', ',');
+}
+function parseNum(s) {
+  if (s == null || s === '') return 0;
+  const x = parseFloat(String(s).replace(',', '.'));
+  return isFinite(x) ? x : 0;
+}
+function showToast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 2200);
+}
+function isUrl(s) { return s && /^https?:\/\//i.test(s.trim()); }
+
+/* AREA UNIT — stored canonically in hectares; displayed in user's chosen unit */
+const HA_TO_AC = 2.4710538;
+function toDisplayArea(ha) { return state.areaUnit === 'ак' ? ha * HA_TO_AC : ha; }
+function fromInputArea(v)  { return state.areaUnit === 'ак' ? v / HA_TO_AC : v; }
+function areaLabel() { return state.areaUnit === 'ак' ? 'ак' : 'га'; }
+function areaLabelFull() { return state.areaUnit === 'ак' ? 'акри' : 'гектари'; }
+
+/* CUSTOM CONFIRM (replaces native confirm() which gets blocked on content:// URLs) */
+let _confirmCb = null;
+function confirmModal(message, onOk, opts) {
+  $('#confirm-message').textContent = message;
+  const ok = $('#confirm-ok');
+  ok.textContent = (opts && opts.okLabel) || 'Підтвердити';
+  ok.className = 'btn ' + ((opts && opts.primary) ? 'btn-primary' : 'btn-danger');
+  _confirmCb = onOk;
+  $('#overlay-confirm').classList.add('visible');
+}
+function closeConfirm() {
+  $('#overlay-confirm').classList.remove('visible');
+  _confirmCb = null;
+}
+$('#confirm-cancel').addEventListener('click', closeConfirm);
+$('#confirm-ok').addEventListener('click', () => {
+  const cb = _confirmCb;
+  closeConfirm();
+  if (cb) cb();
+});
+function fmtDate(s) {
+  if (!s) return '';
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return s;
+  const months = ['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+  return `${parseInt(m[3])} ${months[parseInt(m[2])-1]} ${m[1]}`;
+}
+
+const ICONS = {
+  pin:      '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  area:     '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+  seed:     '<svg viewBox="0 0 24 24"><path d="M12 2c4 4 6 8 6 12a6 6 0 0 1-12 0c0-4 2-8 6-12z"/><path d="M12 8v10"/></svg>',
+  text:     '<svg viewBox="0 0 24 24"><line x1="6" y1="8" x2="18" y2="8"/><line x1="6" y1="13" x2="18" y2="13"/><line x1="6" y1="18" x2="14" y2="18"/></svg>'
+};
+
+/* ===== COMPUTATIONS ===== */
+function counterTotalUnits(counter, card) {
+  if (!counter.unitValue) return null;
+  const count = card.counts[counter.id] || 0;
+  const corr = card.corrections[counter.id] || 0;
+  return count * counter.unitValue + corr;
+}
+
+function varietyAnalytics() {
+  const seedCounters = state.schema.counters.filter(c => c.role === 'seed' && c.unitValue);
+  const groups = new Map();
+  let totalArea = 0, totalSeed = 0;
+
+  state.cards.forEach(card => {
+    const seedRaw = (card.meta.seed || '').trim();
+    const key = seedRaw.toLowerCase() || '__none__';
+    const display = seedRaw || 'Не вказано';
+    if (!groups.has(key)) groups.set(key, { name: display, area: 0, seedKg: 0, fields: 0 });
+    const g = groups.get(key);
+    g.fields++;
+    const area = parseNum(card.meta.area);
+    g.area += area;
+    totalArea += area;
+    seedCounters.forEach(cn => {
+      const t = counterTotalUnits(cn, card) || 0;
+      g.seedKg += t;
+      totalSeed += t;
+    });
+  });
+
+  const arr = Array.from(groups.values()).sort((a, b) => b.area - a.area);
+  return { groups: arr, totalArea, totalSeed, totalFields: state.cards.length, seedUnitLabel: seedCounters[0]?.unitLabel || 'кг' };
+}
+
+function counterTotalsAcrossCards() {
+  return state.schema.counters.map(cn => {
+    let count = 0, units = 0;
+    state.cards.forEach(card => {
+      count += card.counts[cn.id] || 0;
+      const t = counterTotalUnits(cn, card);
+      if (t != null) units += t;
+    });
+    return { counter: cn, count, units, hasUnits: !!cn.unitValue };
+  });
+}
+
+/* ===== HEADER ===== */
+function renderHeader() {
+  const back = $('#btn-back');
+  const spacer = $('#left-spacer');
+  const title = $('#header-title');
+  if (view === 'card') {
+    back.classList.remove('hidden');
+    spacer.style.display = 'none';
+    const c = activeCard();
+    title.textContent = c ? c.name : '';
+  } else if (view === 'analytics') {
+    back.classList.remove('hidden');
+    spacer.style.display = 'none';
+    title.textContent = 'Підсумок';
+  } else {
+    back.classList.add('hidden');
+    spacer.style.display = 'block';
+    title.innerHTML = 'грядка<span class="period">.</span>';
+  }
+}
+
+/* ===== LIST SCREEN ===== */
+function renderList() {
+  const c = $('#cards-container');
+  c.innerHTML = '';
+  if (state.cards.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'Ще немає полів';
+    c.appendChild(empty);
+  }
+  state.cards.forEach(card => {
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    const seed = (card.meta.seed || '').trim();
+    const area = parseNum(card.meta.area);
+    let metaPart = [];
+    if (area > 0) metaPart.push(fmtNum(toDisplayArea(area)) + ' ' + areaLabel());
+    if (seed) metaPart.push(seed);
+    const metaStr = metaPart.length ? metaPart.join(' · ') : '';
+    let html = `<div class="card-row-head">
+      <div class="card-row-name">${esc(card.name)}</div>
+      ${metaStr ? `<div class="card-row-meta">${esc(metaStr)}</div>` : ''}
+      <div class="card-row-arrow">→</div>
+    </div><div class="mini-counters">`;
+    state.schema.counters.forEach(cn => {
+      const v = card.counts[cn.id] || 0;
+      const shortName = cn.name.split(' ')[0];
+      html += `<div class="mini-counter"><div class="mini-counter-name">${esc(shortName)}</div><div class="mini-counter-value" style="color:${cn.colour}">${v}</div></div>`;
+    });
+    html += '</div>';
+    row.innerHTML = html;
+    row.addEventListener('click', () => openCard(card.id));
+    c.appendChild(row);
+  });
+  const add = document.createElement('button');
+  add.className = 'add-card-btn';
+  add.textContent = '+ Нове поле';
+  add.addEventListener('click', addCard);
+  c.appendChild(add);
+}
+
+/* ===== CARD SCREEN ===== */
+function renderCard() {
+  const card = activeCard();
+  if (!card) return;
+  const mb = $('#meta-block');
+  mb.innerHTML = '';
+  state.schema.metaFields.forEach(f => {
+    const v = card.meta[f.id];
+    let valueHtml;
+    if (v === '' || v == null) valueHtml = `<div class="meta-value empty">—</div>`;
+    else if (f.type === 'url' && isUrl(v)) valueHtml = `<div class="meta-value"><a href="${esc(v)}" target="_blank" rel="noopener">відкрити</a></div>`;
+    else if (f.type === 'date') valueHtml = `<div class="meta-value">${esc(fmtDate(v))}</div>`;
+    else if (f.type === 'number') {
+      let n = parseNum(v);
+      let unit = f.unit;
+      if (f.id === 'area') { n = toDisplayArea(n); unit = areaLabel(); }
+      valueHtml = `<div class="meta-value">${fmtNum(n)}${unit ? `<span class="unit">${esc(unit)}</span>` : ''}</div>`;
+    }
+    else valueHtml = `<div class="meta-value">${esc(v)}</div>`;
+    const row = document.createElement('div');
+    row.className = 'meta-row';
+    row.innerHTML = `<div class="meta-icon">${ICONS[f.icon] || ICONS.text}</div><div class="meta-label">${esc(f.label)}</div>${valueHtml}`;
+    mb.appendChild(row);
+  });
+
+  const grid = $('#counters-grid');
+  grid.innerHTML = '';
+  state.schema.counters.forEach(cn => {
+    const v = card.counts[cn.id] || 0;
+    const corr = card.corrections[cn.id] || 0;
+    const tile = document.createElement('div');
+    tile.className = 'counter-tile';
+    tile.style.setProperty('--tile-color', cn.colour);
+    tile.dataset.counterId = cn.id;
+
+    let secondaryHtml = '';
+    if (cn.unitValue) {
+      const total = v * cn.unitValue + corr;
+      secondaryHtml = `<div class="counter-tile-sub">≈ ${fmtInt(total)} ${esc(cn.unitLabel || '')}</div>`;
+      if (corr !== 0) {
+        const sign = corr > 0 ? '+' : '';
+        secondaryHtml += `<div class="counter-tile-corr">кор: ${sign}${fmtInt(corr)}</div>`;
+      }
+    } else if (cn.unitLabel) {
+      secondaryHtml = `<div class="counter-tile-hint">задати вагу одиниці</div>`;
+    }
+
+    tile.innerHTML = `
+      <div class="glow"></div>
+      <button class="tile-menu-btn" aria-label="Меню матеріалу">⋮</button>
+      <div class="counter-tile-header">
+        <div class="counter-tile-dot"></div>
+        <div class="counter-tile-name">${esc(cn.name)}</div>
+      </div>
+      <div class="counter-tile-value">${v}</div>
+      ${secondaryHtml}
+    `;
+    tile.addEventListener('click', e => {
+      if (e.target.closest('.tile-menu-btn')) {
+        e.stopPropagation();
+        openTileMenu(cn.id);
+        return;
+      }
+      e.preventDefault();
+      tapCounter(cn.id);
+    });
+    grid.appendChild(tile);
+  });
+}
+
+const pulseTimers = {};
+function tapCounter(counterId) {
+  const card = activeCard(); if (!card) return;
+  const cn = state.schema.counters.find(c => c.id === counterId); if (!cn) return;
+  card.counts[counterId] = (card.counts[counterId] || 0) + 1;
+  if (state.logEnabled) {
+    card.events = card.events || [];
+    card.events.push({ counterId, ts: Date.now() });
+  }
+  save();
+  const tile = document.querySelector(`.counter-tile[data-counter-id="${counterId}"]`);
+  if (tile) {
+    tile.querySelector('.counter-tile-value').textContent = card.counts[counterId];
+    if (cn.unitValue) {
+      const total = card.counts[counterId] * cn.unitValue + (card.corrections[counterId] || 0);
+      const sub = tile.querySelector('.counter-tile-sub');
+      if (sub) sub.textContent = `≈ ${fmtInt(total)} ${cn.unitLabel || ''}`;
+    }
+    tile.classList.add('pulsing');
+    clearTimeout(pulseTimers[counterId]);
+    pulseTimers[counterId] = setTimeout(() => tile.classList.remove('pulsing'), 200);
+  }
+  (SOUNDS[cn.sound] || SOUNDS.click).play();
+  if (cn.vibrate && 'vibrate' in navigator) navigator.vibrate(35);
+}
+
+/* ===== ANALYTICS SCREEN ===== */
+function renderAnalytics() {
+  const wrap = $('#analytics-wrap');
+  const a = varietyAnalytics();
+  const totals = counterTotalsAcrossCards();
+
+  const seedSection = document.createElement('div');
+  seedSection.className = 'ana-section';
+  let seedHtml = `<div class="ana-section-title">По сортах</div>`;
+  if (a.totalFields === 0) {
+    seedHtml += `<div style="color:var(--text-faint);font-style:italic">Немає полів</div>`;
+  } else {
+    a.groups.forEach(g => {
+      const areaPct = a.totalArea > 0 ? (g.area / a.totalArea * 100) : 0;
+      const seedPct = a.totalSeed > 0 ? (g.seedKg / a.totalSeed * 100) : 0;
+      seedHtml += `
+        <div class="ana-variety">
+          <div class="ana-variety-name">${esc(g.name)}<span class="fields-count">${g.fields} ${g.fields === 1 ? 'поле' : (g.fields < 5 ? 'поля' : 'полів')}</span></div>
+          <div class="ana-stat-row">
+            <span class="ana-stat-label">площа</span>
+            <span class="ana-stat-value">${fmtNum(toDisplayArea(g.area))} ${esc(areaLabel())}<span class="ana-stat-percent">${fmtNum(areaPct)}%</span></span>
+          </div>
+          <div class="ana-stat-row">
+            <span class="ana-stat-label">насіння</span>
+            <span class="ana-stat-value">${fmtInt(g.seedKg)} ${esc(a.seedUnitLabel)}<span class="ana-stat-percent">${fmtNum(seedPct)}%</span></span>
+          </div>
+        </div>`;
+    });
+    seedHtml += `
+      <div class="ana-total">
+        <div class="ana-stat-row"><span class="ana-stat-label">Разом площа</span><span class="ana-stat-value">${fmtNum(toDisplayArea(a.totalArea))} ${esc(areaLabel())}</span></div>
+        <div class="ana-stat-row"><span class="ana-stat-label">Разом насіння</span><span class="ana-stat-value">${fmtInt(a.totalSeed)} ${esc(a.seedUnitLabel)}</span></div>
+        <div class="ana-stat-row"><span class="ana-stat-label">Полів усього</span><span class="ana-stat-value">${a.totalFields}</span></div>
+      </div>`;
+  }
+  seedSection.innerHTML = seedHtml;
+  wrap.innerHTML = '';
+  wrap.appendChild(seedSection);
+
+  const otherSection = document.createElement('div');
+  otherSection.className = 'ana-section';
+  let otherHtml = `<div class="ana-section-title">По всіх матеріалах</div>`;
+  totals.forEach(t => {
+    const cn = t.counter;
+    let valueStr;
+    if (t.hasUnits) valueStr = `${t.count} <span style="color:var(--text-faint)">шт</span> · ${fmtInt(t.units)} ${esc(cn.unitLabel || '')}`;
+    else valueStr = `${t.count}${cn.unitLabel ? ' ' + esc(cn.unitLabel) : ''}`;
+    otherHtml += `
+      <div class="ana-stat-row" style="padding:6px 0">
+        <span class="ana-stat-label" style="display:flex;align-items:center;gap:8px">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${cn.colour}"></span>
+          ${esc(cn.name)}
+        </span>
+        <span class="ana-stat-value">${valueStr}</span>
+      </div>`;
+  });
+  otherSection.innerHTML = otherHtml;
+  wrap.appendChild(otherSection);
+}
+
+/* ===== NAVIGATION ===== */
+function showView(v) {
+  view = v;
+  $('#screen-list').classList.toggle('hidden', v !== 'list');
+  $('#screen-card').classList.toggle('hidden', v !== 'card');
+  $('#screen-analytics').classList.toggle('hidden', v !== 'analytics');
+  renderHeader();
+}
+function openCard(cardId) {
+  state.activeCardId = cardId; save();
+  renderCard();
+  showView('card');
+}
+function backToList() {
+  renderList();
+  showView('list');
+}
+function openAnalytics() {
+  renderAnalytics();
+  showView('analytics');
+}
+
+function addCard() {
+  const card = newCard(state.schema, 'Нове поле ' + (state.cards.length + 1));
+  state.cards.push(card);
+  state.activeCardId = card.id;
+  save();
+  renderCard();
+  showView('card');
+  setTimeout(openMetaModal, 200);
+}
+
+/* ===== META MODAL ===== */
+function openMetaModal() {
+  const card = activeCard(); if (!card) return;
+  $('#meta-name').value = card.name || '';
+  const wrap = $('#meta-fields');
+  wrap.innerHTML = '';
+  state.schema.metaFields.forEach(f => {
+    const v = card.meta[f.id] || '';
+    const g = document.createElement('div');
+    g.className = 'form-group';
+    let inputHtml;
+    if (f.type === 'date') inputHtml = `<input type="date" class="form-input" data-field="${f.id}" value="${esc(v)}">`;
+    else if (f.type === 'url') inputHtml = `<input type="url" class="form-input" data-field="${f.id}" value="${esc(v)}" placeholder="https://...">`;
+    else if (f.type === 'number') {
+      let displayVal = v;
+      let labelUnit = f.unit;
+      if (f.id === 'area') {
+        const n = parseNum(v);
+        displayVal = n ? (Math.round(toDisplayArea(n) * 1000) / 1000).toString() : '';
+        labelUnit = areaLabel();
+      }
+      const unit = labelUnit ? ` <span style="color:var(--text-faint)">(${esc(labelUnit)})</span>` : '';
+      inputHtml = `<input type="number" step="any" inputmode="decimal" class="form-input" data-field="${f.id}" value="${esc(displayVal)}" placeholder="0">`;
+      g.innerHTML = `<label class="form-label">${esc(f.label)}${unit}</label>${inputHtml}`;
+      wrap.appendChild(g);
+      return;
+    }
+    else inputHtml = `<input type="text" class="form-input" data-field="${f.id}" value="${esc(v)}">`;
+    g.innerHTML = `<label class="form-label">${esc(f.label)}</label>${inputHtml}`;
+    wrap.appendChild(g);
+  });
+  showOverlay('overlay-meta');
+}
+
+$('#btn-meta-save').addEventListener('click', () => {
+  const card = activeCard(); if (!card) return;
+  card.name = $('#meta-name').value.trim() || 'Без назви';
+  $$('#meta-fields [data-field]').forEach(inp => {
+    let val = inp.value.trim();
+    if (inp.dataset.field === 'area' && val !== '') {
+      const n = parseNum(val);
+      val = String(fromInputArea(n));
+    }
+    card.meta[inp.dataset.field] = val;
+  });
+  save();
+  closeOverlays();
+  renderCard();
+  renderHeader();
+});
+
+/* ===== HEADER MENU ===== */
+function openMenu() {
+  const body = $('#menu-body');
+  body.innerHTML = '';
+  $('#menu-title').textContent = view === 'card' ? (activeCard()?.name || 'Меню') : (view === 'analytics' ? 'Підсумок' : 'Меню');
+
+  if (view === 'card') {
+    body.innerHTML = `
+      <div class="modal-section-title">Це поле</div>
+      <div class="menu-item" data-act="rename"><span class="item-name">Перейменувати поле</span><span class="item-arrow">›</span></div>
+      <div class="menu-item" data-act="reset-card"><span class="item-name" style="color:var(--danger)">Обнулити матеріали на цьому полі</span><span class="item-arrow">›</span></div>
+      <div class="menu-item" data-act="delete-card"><span class="item-name" style="color:var(--danger)">Видалити поле</span><span class="item-arrow">›</span></div>
+      <div class="modal-section-title">Матеріали (всі поля)</div>
+    `;
+    state.schema.counters.forEach(cn => {
+      const row = document.createElement('div');
+      row.className = 'menu-item';
+      row.dataset.act = 'edit-counter';
+      row.dataset.counterId = cn.id;
+      row.innerHTML = `<div class="item-color" style="background:${cn.colour}"></div><div class="item-name">${esc(cn.name)}</div><div class="item-arrow">›</div>`;
+      body.appendChild(row);
+    });
+    const addRow = document.createElement('div');
+    addRow.className = 'menu-item';
+    addRow.dataset.act = 'add-counter';
+    addRow.innerHTML = `<span class="item-name" style="color:var(--text-dim);font-style:italic;font-family:Fraunces,serif">+ Новий матеріал</span>`;
+    body.appendChild(addRow);
+  }
+
+  const sec = document.createElement('div');
+  sec.innerHTML = `
+    <div class="modal-section-title">Налаштування</div>
+    <div style="padding:14px 22px 4px">
+      <div style="font-size:0.92rem;color:var(--text);margin-bottom:8px">Одиниця площі</div>
+      <div class="sounds">
+        <div class="sound-chip ${state.areaUnit === 'га' ? 'selected' : ''}" data-act="set-area-unit" data-unit="га">гектари</div>
+        <div class="sound-chip ${state.areaUnit === 'ак' ? 'selected' : ''}" data-act="set-area-unit" data-unit="ак">акри</div>
+      </div>
+      <div style="font-size:0.7rem;color:var(--text-faint);margin-top:8px;font-family:'JetBrains Mono',monospace">1 га ≈ 2.471 ак · значення зберігаються в гектарах</div>
+    </div>
+    <div class="modal-section-title">Підсумок та експорт</div>
+    <div class="menu-item" data-act="open-analytics"><span class="item-name">Підсумок по сортах і полях</span><span class="item-arrow">›</span></div>
+    <div class="menu-item" data-act="export-fields"><span class="item-name">Експорт по полях (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="menu-item" data-act="export-varieties"><span class="item-name">Експорт по сортах (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="modal-section-title">Журнал часу</div>
+    <div class="toggle-row" style="border-top:none;padding-top:8px">
+      <div>
+        <div class="toggle-label">Записувати час кожного тапу</div>
+        <div class="toggle-sub">потрібно для журналу подій</div>
+      </div>
+      <div class="toggle ${state.logEnabled ? 'on' : ''}" id="log-toggle"></div>
+    </div>
+    <div class="menu-item" data-act="export-log"><span class="item-name">Експорт журналу подій (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="modal-section-title">Дані</div>
+    <div class="menu-item" data-act="reset-all"><span class="item-name" style="color:var(--danger)">Очистити всі дані</span><span class="item-arrow">›</span></div>
+  `;
+  body.appendChild(sec);
+
+  showOverlay('overlay-menu');
+}
+
+$('#overlay-menu').addEventListener('click', e => {
+  if (e.target.id === 'log-toggle') {
+    state.logEnabled = !state.logEnabled;
+    save();
+    e.target.classList.toggle('on', state.logEnabled);
+    showToast(state.logEnabled ? 'Час кожного тапу буде записано' : 'Запис часу вимкнено');
+    return;
+  }
+  const target = e.target.closest('[data-act]');
+  if (!target) return;
+  handleMenuAction(target.dataset.act, target);
+});
+
+function handleMenuAction(act, target) {
+  switch (act) {
+    case 'rename':
+      closeOverlays();
+      setTimeout(openMetaModal, 200);
+      break;
+    case 'reset-card': {
+      const c = activeCard(); if (!c) return;
+      confirmModal('Обнулити всі матеріали на цьому полі? Корекції також скинуться.', () => {
+        state.schema.counters.forEach(cn => { c.counts[cn.id] = 0; c.corrections[cn.id] = 0; });
+        c.events = [];
+        save(); renderCard(); closeOverlays();
+        showToast('Матеріали обнулено');
+      });
+      break;
+    }
+    case 'delete-card': {
+      const c = activeCard(); if (!c) return;
+      if (state.cards.length <= 1) {
+        showToast('Не можна видалити єдине поле. Спочатку створи інше.');
+        return;
+      }
+      confirmModal(`Видалити поле «${c.name}»?`, () => {
+        state.cards = state.cards.filter(x => x.id !== c.id);
+        state.activeCardId = state.cards[0]?.id;
+        save();
+        closeOverlays();
+        backToList();
+      });
+      break;
+    }
+    case 'edit-counter':
+      openCounterModal(target.dataset.counterId);
+      break;
+    case 'add-counter':
+      openCounterModal(null);
+      break;
+    case 'open-analytics':
+      closeOverlays();
+      setTimeout(openAnalytics, 200);
+      break;
+    case 'export-fields': exportFieldsCSV(); break;
+    case 'export-varieties': exportVarietiesCSV(); break;
+    case 'export-log': exportLogCSV(); break;
+    case 'set-area-unit':
+      state.areaUnit = target.dataset.unit;
+      save();
+      $$('[data-act="set-area-unit"]').forEach(c => c.classList.toggle('selected', c.dataset.unit === state.areaUnit));
+      showToast('Одиниця площі: ' + areaLabelFull());
+      break;
+    case 'reset-all':
+      confirmModal('Видалити всі поля та налаштування назавжди?', () => {
+        state = defaultState();
+        save();
+        closeOverlays();
+        backToList();
+      });
+      break;
+  }
+}
+
+/* ===== COUNTER SETTINGS MODAL ===== */
+let editingCounterId = null;
+function openCounterModal(counterId) {
+  editingCounterId = counterId;
+  const cn = counterId ? state.schema.counters.find(c => c.id === counterId) : null;
+  $('#counter-name').value = cn ? cn.name : '';
+  $('#counter-unit-label').value = cn && cn.unitLabel ? cn.unitLabel : '';
+  $('#counter-unit-value').value = cn && cn.unitValue ? cn.unitValue : '';
+  $('#btn-counter-delete').style.display = (cn && state.schema.counters.length > 1) ? '' : 'none';
+
+  const sw = $('#counter-swatches');
+  sw.innerHTML = '';
+  const selectedColour = cn ? cn.colour : COLOURS[state.schema.counters.length % COLOURS.length];
+  COLOURS.forEach(col => {
+    const el = document.createElement('div');
+    el.className = 'swatch' + (col === selectedColour ? ' selected' : '');
+    el.style.background = col;
+    el.dataset.colour = col;
+    el.addEventListener('click', () => {
+      $$('#counter-swatches .swatch').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+    sw.appendChild(el);
+  });
+
+  const ss = $('#counter-sounds');
+  ss.innerHTML = '';
+  const selectedSound = cn ? cn.sound : 'click';
+  Object.keys(SOUNDS).forEach(key => {
+    const chip = document.createElement('div');
+    chip.className = 'sound-chip' + (key === selectedSound ? ' selected' : '');
+    chip.textContent = SOUNDS[key].name;
+    chip.dataset.sound = key;
+    chip.addEventListener('click', () => {
+      $$('#counter-sounds .sound-chip').forEach(s => s.classList.remove('selected'));
+      chip.classList.add('selected');
+      SOUNDS[key].play();
+    });
+    ss.appendChild(chip);
+  });
+
+  const v = $('#counter-vibrate');
+  const vOn = cn ? cn.vibrate : true;
+  v.classList.toggle('on', vOn); v.dataset.on = vOn ? '1' : '0';
+
+  const r = $('#counter-role-seed');
+  const rOn = cn ? cn.role === 'seed' : false;
+  r.classList.toggle('on', rOn); r.dataset.on = rOn ? '1' : '0';
+
+  closeOverlays();
+  setTimeout(() => showOverlay('overlay-counter'), 100);
+}
+$('#counter-vibrate').addEventListener('click', () => {
+  const v = $('#counter-vibrate');
+  const on = v.dataset.on !== '1';
+  v.dataset.on = on ? '1' : '0';
+  v.classList.toggle('on', on);
+  if (on && 'vibrate' in navigator) navigator.vibrate(35);
+});
+$('#counter-role-seed').addEventListener('click', () => {
+  const r = $('#counter-role-seed');
+  const on = r.dataset.on !== '1';
+  r.dataset.on = on ? '1' : '0';
+  r.classList.toggle('on', on);
+});
+$('#btn-counter-save').addEventListener('click', () => {
+  const name = $('#counter-name').value.trim() || 'Матеріал';
+  const colour = $('#counter-swatches .swatch.selected')?.dataset.colour || COLOURS[0];
+  const sound = $('#counter-sounds .sound-chip.selected')?.dataset.sound || 'click';
+  const vibrate = $('#counter-vibrate').dataset.on === '1';
+  const role = $('#counter-role-seed').dataset.on === '1' ? 'seed' : 'other';
+  const unitLabel = $('#counter-unit-label').value.trim() || null;
+  const unitValueRaw = $('#counter-unit-value').value.trim();
+  const unitValue = unitValueRaw === '' ? null : parseNum(unitValueRaw);
+
+  if (editingCounterId) {
+    const cn = state.schema.counters.find(c => c.id === editingCounterId);
+    if (cn) Object.assign(cn, { name, colour, sound, vibrate, role, unitLabel, unitValue });
+  } else {
+    const newCn = { id: id(), name, colour, sound, vibrate, role, unitLabel, unitValue };
+    state.schema.counters.push(newCn);
+    state.cards.forEach(c => { c.counts[newCn.id] = 0; c.corrections[newCn.id] = 0; });
+  }
+  save();
+  closeOverlays();
+  if (view === 'card') renderCard();
+  if (view === 'analytics') renderAnalytics();
+});
+$('#btn-counter-delete').addEventListener('click', () => {
+  if (!editingCounterId) return;
+  if (state.schema.counters.length <= 1) return;
+  confirmModal('Видалити цей матеріал з усіх полів? Дані буде втрачено.', () => {
+    state.schema.counters = state.schema.counters.filter(c => c.id !== editingCounterId);
+    state.cards.forEach(c => {
+      delete c.counts[editingCounterId];
+      delete c.corrections[editingCounterId];
+      c.events = (c.events || []).filter(e => e.counterId !== editingCounterId);
+    });
+    save();
+    closeOverlays();
+    if (view === 'card') renderCard();
+  });
+});
+
+/* ===== TILE MENU MODAL (per-card per-counter) ===== */
+let tileMenuCounterId = null;
+function openTileMenu(counterId) {
+  const card = activeCard(); if (!card) return;
+  const cn = state.schema.counters.find(c => c.id === counterId); if (!cn) return;
+  tileMenuCounterId = counterId;
+
+  $('#tile-title').textContent = cn.name;
+  $('#tile-count').value = card.counts[counterId] || 0;
+  const corrInput = $('#tile-correction');
+  corrInput.value = card.corrections[counterId] || 0;
+  $('#tile-correction-unit').textContent = cn.unitLabel ? `(${cn.unitLabel})` : '';
+  $('#tile-correction-group').style.display = cn.unitValue ? '' : 'none';
+
+  updateTilePreview();
+  showOverlay('overlay-tile');
+}
+function updateTilePreview() {
+  const cn = state.schema.counters.find(c => c.id === tileMenuCounterId);
+  if (!cn) return;
+  const count = parseInt($('#tile-count').value, 10) || 0;
+  const corr = parseNum($('#tile-correction').value);
+  const preview = $('#tile-preview');
+  if (cn.unitValue) {
+    const total = count * cn.unitValue + corr;
+    preview.innerHTML = `${count} × ${fmtInt(cn.unitValue)}${corr !== 0 ? ` ${corr > 0 ? '+' : '−'} ${fmtInt(Math.abs(corr))}` : ''} = <b>${fmtInt(total)} ${esc(cn.unitLabel || '')}</b>`;
+    preview.style.display = '';
+  } else {
+    preview.innerHTML = `Кількість: <b>${count}</b>`;
+    preview.style.display = '';
+  }
+}
+$('#tile-count').addEventListener('input', updateTilePreview);
+$('#tile-correction').addEventListener('input', updateTilePreview);
+$('#tile-minus').addEventListener('click', () => {
+  const inp = $('#tile-count');
+  inp.value = Math.max(0, (parseInt(inp.value, 10) || 0) - 1);
+  updateTilePreview();
+});
+$('#tile-plus').addEventListener('click', () => {
+  const inp = $('#tile-count');
+  inp.value = (parseInt(inp.value, 10) || 0) + 1;
+  updateTilePreview();
+});
+$('#btn-tile-save').addEventListener('click', () => {
+  const card = activeCard(); if (!card) return;
+  const cn = state.schema.counters.find(c => c.id === tileMenuCounterId); if (!cn) return;
+  const count = Math.max(0, parseInt($('#tile-count').value, 10) || 0);
+  const corr = parseNum($('#tile-correction').value);
+  card.counts[tileMenuCounterId] = count;
+  card.corrections[tileMenuCounterId] = corr;
+  save();
+  closeOverlays();
+  renderCard();
+});
+$('#btn-tile-reset').addEventListener('click', () => {
+  confirmModal('Скинути цей матеріал на 0 і обнулити корекцію?', () => {
+    const card = activeCard(); if (!card) return;
+    card.counts[tileMenuCounterId] = 0;
+    card.corrections[tileMenuCounterId] = 0;
+    save();
+    closeOverlays();
+    renderCard();
+    showToast('Матеріал скинуто');
+  });
+});
+$('#btn-tile-settings').addEventListener('click', () => {
+  const cid = tileMenuCounterId;
+  closeOverlays();
+  setTimeout(() => openCounterModal(cid), 150);
+});
+
+/* ===== CSV ===== */
+function csvEscape(v) {
+  const s = String(v == null ? '' : v);
+  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function downloadCSV(filename, rows) {
+  const csv = '\ufeff' + rows.map(r => r.map(csvEscape).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+}
+function tsFormat(ms) {
+  const d = new Date(ms);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+function stamp() { return tsFormat(Date.now()).replace(/[^0-9]/g, '').slice(0, 12); }
+
+function exportFieldsCSV() {
+  const headers = ['Назва'];
+  state.schema.metaFields.forEach(f => {
+    let unit = f.unit;
+    if (f.id === 'area') unit = areaLabel();
+    const lbl = unit ? `${f.label} (${unit})` : f.label;
+    headers.push(lbl);
+  });
+  state.schema.counters.forEach(c => {
+    headers.push(`${c.name} (шт)`);
+    if (c.unitValue) {
+      headers.push(`${c.name} (${c.unitLabel || ''})`);
+      headers.push(`${c.name} корекція`);
+    }
+  });
+  const rows = [headers];
+  state.cards.forEach(card => {
+    const row = [card.name];
+    state.schema.metaFields.forEach(f => {
+      let val = card.meta[f.id] || '';
+      if (f.id === 'area' && val !== '') val = Math.round(toDisplayArea(parseNum(val)) * 1000) / 1000;
+      row.push(val);
+    });
+    state.schema.counters.forEach(c => {
+      row.push(card.counts[c.id] || 0);
+      if (c.unitValue) {
+        row.push(counterTotalUnits(c, card) || 0);
+        row.push(card.corrections[c.id] || 0);
+      }
+    });
+    rows.push(row);
+  });
+  downloadCSV(`polya-${stamp()}.csv`, rows);
+  closeOverlays();
+  showToast('Збережено в Downloads');
+}
+
+function exportVarietiesCSV() {
+  const a = varietyAnalytics();
+  const aLbl = areaLabel();
+  const headers = ['Сорт', 'Полів', `Площа (${aLbl})`, '% площі', `Насіння (${a.seedUnitLabel})`, '% насіння'];
+  const rows = [headers];
+  a.groups.forEach(g => {
+    const areaPct = a.totalArea > 0 ? (g.area / a.totalArea * 100) : 0;
+    const seedPct = a.totalSeed > 0 ? (g.seedKg / a.totalSeed * 100) : 0;
+    rows.push([
+      g.name, g.fields,
+      Math.round(toDisplayArea(g.area) * 100) / 100,
+      Math.round(areaPct * 10) / 10,
+      Math.round(g.seedKg),
+      Math.round(seedPct * 10) / 10
+    ]);
+  });
+  rows.push(['Разом', a.totalFields, Math.round(toDisplayArea(a.totalArea) * 100) / 100, 100, Math.round(a.totalSeed), 100]);
+  downloadCSV(`sorty-${stamp()}.csv`, rows);
+  closeOverlays();
+  showToast('Збережено в Downloads');
+}
+
+function exportLogCSV() {
+  const rows = [['Поле', 'Матеріал', 'Час']];
+  let total = 0;
+  state.cards.forEach(card => {
+    (card.events || []).forEach(ev => {
+      const cn = state.schema.counters.find(c => c.id === ev.counterId);
+      rows.push([card.name, cn ? cn.name : ev.counterId, tsFormat(ev.ts)]);
+      total++;
+    });
+  });
+  if (total === 0) {
+    closeOverlays();
+    showToast('Журнал порожній. Увімкни «Записувати час».');
+    return;
+  }
+  downloadCSV(`zhurnal-${stamp()}.csv`, rows);
+  closeOverlays();
+  showToast(`Збережено (${total} подій)`);
+}
+
+/* ===== OVERLAYS ===== */
+function showOverlay(id) { $('#' + id).classList.add('visible'); }
+function closeOverlays() {
+  $$('.overlay').forEach(o => {
+    if (o.id !== 'overlay-confirm') o.classList.remove('visible');
+  });
+}
+$$('.overlay').forEach(o => {
+  if (o.id === 'overlay-confirm') {
+    o.addEventListener('click', e => { if (e.target === o) closeConfirm(); });
+  } else {
+    o.addEventListener('click', e => { if (e.target === o) closeOverlays(); });
+  }
+});
+$$('[data-close]').forEach(b => b.addEventListener('click', closeOverlays));
+
+$('#btn-back').addEventListener('click', () => {
+  if (view === 'analytics') backToList();
+  else backToList();
+});
+$('#btn-menu').addEventListener('click', openMenu);
+$('#btn-edit-meta').addEventListener('click', openMetaModal);
+
+renderList();
+renderHeader();
+showView('list');
+document.addEventListener('pointerdown', () => { ac(); }, { once: true });
+</script>
+</body>
+</html>
