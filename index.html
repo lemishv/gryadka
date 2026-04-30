@@ -2,4227 +2,1695 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0a0a0a">
-<title>Спрея</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Грядка</title>
+
+<link rel="manifest" href='data:application/json,{"name":"Грядка","short_name":"Грядка","start_url":".","display":"standalone","background_color":"%230a0a0a","theme_color":"%230a0a0a","orientation":"portrait","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 fill=%22%230a0a0a%22/%3E%3Cline x1=%2240%22 y1=%22146%22 x2=%22152%22 y2=%22146%22 stroke=%22%23d4a574%22 stroke-width=%224%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M 96 146 L 96 70%22 stroke=%22%23d4a574%22 stroke-width=%224%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3Cpath d=%22M 96 96 Q 73 85, 65 62%22 stroke=%22%23d4a574%22 stroke-width=%224%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M 96 84 Q 119 73, 127 50%22 stroke=%22%23d4a574%22 stroke-width=%224%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+
   :root {
     --bg: #0a0a0a;
     --surface: #141414;
     --surface-2: #1c1c1c;
-    --border: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.16);
-    --text: #ededed;
-    --text-dim: #888;
-    --text-faint: #555;
-    --amber: #d4a574;
-    --amber-dim: rgba(212,165,116,0.10);
-    --amber-fg: #1a1208;
-    --teal: #8aa9ad;
-    --stop-bg: #2a1818;
-    --stop-fg: #e88c8c;
-    --stop-border: rgba(184,92,92,0.4);
-    --danger: #b85c5c;
-    --serif: 'Fraunces', Georgia, serif;
-    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --text: #f0eee6;
+    --text-dim: #8a8478;
+    --text-faint: #4a4640;
+    --accent: #d4a574;
+    --border: #2a2825;
+    --danger: #c66;
   }
-  [data-theme="light"] {
-    --bg: #faf8f4;
-    --surface: #ffffff;
-    --surface-2: #f0ece4;
-    --border: rgba(0,0,0,0.08);
-    --border-strong: rgba(0,0,0,0.18);
-    --text: #1a1a1a;
-    --text-dim: #6a6a6a;
-    --text-faint: #a0a0a0;
-    --amber: #a06a2a;
-    --amber-dim: rgba(160,106,42,0.08);
-    --amber-fg: #ffffff;
-    --teal: #4d7a7d;
-    --stop-bg: #fbe5e5;
-    --stop-fg: #a04040;
-    --stop-border: rgba(160,64,64,0.4);
-    --danger: #a04040;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   html, body {
+    height: 100%; width: 100%;
+    overflow: hidden;
     background: var(--bg);
     color: var(--text);
-    font-family: var(--mono);
-    font-size: 15px;
-    line-height: 1.5;
-    min-height: 100vh;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 300;
     overscroll-behavior: none;
   }
+  body { position: fixed; inset: 0; }
+  input, textarea { user-select: text; -webkit-user-select: text; }
 
-  body {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 16px 16px 80px;
-  }
+  .app { display: flex; flex-direction: column; height: 100%; width: 100%; }
 
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 4px 24px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 24px;
-    gap: 8px;
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: max(env(safe-area-inset-top), 14px) 18px 0;
+    height: calc(56px + max(env(safe-area-inset-top), 14px));
+    flex-shrink: 0; gap: 10px;
   }
-  .title {
-    font-family: var(--serif);
-    font-weight: 600;
-    font-size: 28px;
-    letter-spacing: -0.02em;
-    color: var(--amber);
-  }
-  .header-controls {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .theme-btn {
-    background: none;
-    border: 1px solid var(--border-strong);
-    color: var(--text-dim);
-    width: 32px;
-    height: 28px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .theme-btn:active { color: var(--amber); border-color: var(--amber); }
-
-  .lang-toggle {
-    display: flex;
-    border: 1px solid var(--border-strong);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .lang-toggle button {
-    background: none;
-    border: none;
-    color: var(--text-faint);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    padding: 6px 10px;
-    cursor: pointer;
-  }
-  .lang-toggle button.active {
-    background: var(--amber);
-    color: var(--amber-fg);
-  }
-
-  section { margin-bottom: 32px; }
-  h2 {
-    font-family: var(--mono);
-    font-weight: 400;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 14px;
-    padding-left: 2px;
-  }
-
-  .speed-display {
-    display: flex;
-    align-items: center;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin: 24px 0;
-    overflow: hidden;
-  }
-  .speed-manual-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 12px;
-    border-right: 1px solid var(--border);
-    gap: 6px;
-  }
-  .speed-manual-col input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--teal);
-    color: var(--teal);
-    font-family: var(--mono);
-    font-size: 20px;
-    padding: 10px 8px;
-    border-radius: 6px;
+  .header-title {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-weight: 300; font-size: 1.1rem;
+    color: var(--text); letter-spacing: 0.02em;
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     text-align: center;
-    font-variant-numeric: tabular-nums;
-    -moz-appearance: textfield;
   }
-  .speed-manual-col input::-webkit-outer-spin-button,
-  .speed-manual-col input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .speed-manual-col input:focus { outline: none; border-color: var(--teal); }
-  .speed-manual-col .speed-manual-unit {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--teal);
-  }
-  .speed-collected {
-    margin-top: 8px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-faint);
-    font-variant-numeric: tabular-nums;
-    text-align: center;
-    letter-spacing: 0.05em;
-  }
-  .speed-result-col {
-    flex: 2;
-    text-align: center;
-    padding: 20px 12px;
-  }
-  .speed-display .num {
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: 64px;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    color: var(--amber);
-    font-variant-numeric: tabular-nums;
-  }
-  .speed-display .num.zero { color: var(--text-faint); }
-  .speed-display .unit {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-top: 8px;
-  }
-  .speed-display .secondary {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-top: 8px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .timer-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-  }
-  .timer-display {
-    font-family: var(--mono);
-    font-weight: 500;
-    font-size: 48px;
-    line-height: 1;
-    text-align: center;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-    margin-bottom: 10px;
-  }
-  .timer-display.idle { color: var(--text-faint); }
-  .timer-display.running { color: var(--amber); }
-
-  .lap-display {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    padding: 7px 14px;
-    background: var(--surface-2);
-    border-radius: 6px;
-  }
-  .lap-display-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-  .lap-display-time {
-    font-family: var(--mono);
-    font-size: 22px;
-    color: var(--teal);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-  }
-
-  .btn {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    background: var(--surface-2);
-    color: var(--text);
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
-    font-family: var(--mono);
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-  .btn:active { filter: brightness(0.92); }
-  .btn-primary {
-    background: var(--amber);
-    color: var(--amber-fg);
-    border-color: var(--amber);
-    font-weight: 600;
-  }
-  .btn-stop {
-    background: var(--stop-bg);
-    color: var(--stop-fg);
-    border-color: var(--stop-border);
-  }
-  .btn-row { display: flex; gap: 8px; margin-top: 10px; }
-  .btn-row .btn { flex: 1; }
-  .btn-secondary {
-    background: transparent;
-    border-color: var(--border);
-    color: var(--text-dim);
-    font-size: 12px;
-    padding: 12px;
-    letter-spacing: 0.08em;
-  }
-
-  .streams {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px dashed var(--border);
-  }
-  .streams-label {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 12px;
-  }
-  .stream-block {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-  }
-  .stream-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    gap: 8px;
-  }
-  .stream-num {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .stream-delta-inline {
-    flex: 1;
-    text-align: right;
-    font-size: 12px;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
-  .stream-delta-inline strong {
-    color: var(--amber);
-    font-weight: 500;
-  }
-  .remove-stream {
-    background: none;
-    border: none;
-    color: var(--text-faint);
-    font-size: 16px;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    line-height: 1;
-  }
-  .remove-stream:active { color: var(--danger); }
-
-  .stream-pair {
-    display: grid;
-    grid-template-columns: 1fr 16px 1fr;
-    gap: 6px;
-    align-items: end;
-  }
-  .stream-pair .arrow {
-    text-align: center;
-    color: var(--text-faint);
-    font-size: 14px;
-    padding-bottom: 12px;
-  }
-  .stream-field { display: flex; flex-direction: column; gap: 4px; }
-  .stream-field-label {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    padding-left: 2px;
-  }
-  .stream-field input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 16px;
-    padding: 10px 8px;
-    border-radius: 6px;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    -moz-appearance: textfield;
-    min-width: 0;
-  }
-  .stream-field input::-webkit-outer-spin-button,
-  .stream-field input::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
-  }
-  .stream-field input:focus { outline: none; border-color: var(--amber); }
-
-  .stream-presets {
-    display: flex;
-    gap: 6px;
-    margin-top: 8px;
-    flex-wrap: wrap;
-  }
-  .preset-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 6px 9px;
-    border-radius: 4px;
-    cursor: pointer;
-    flex: 1;
-    min-width: 0;
-  }
-  .preset-btn:active { color: var(--amber); border-color: var(--amber); }
-
-  .add-stream-btn {
-    background: none;
-    border: 1px dashed var(--border-strong);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 4px;
-  }
-  .add-stream-btn:active { color: var(--amber); border-color: var(--amber); }
-  .add-stream-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-  .stream-total {
-    margin-top: 14px;
-    padding: 10px 12px;
-    background: var(--bg);
-    border-radius: 6px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-  }
-  .stream-total .label { color: var(--text-dim); }
-  .stream-total .value {
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .manual-block {
-    margin-top: 16px;
-    padding: 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-  }
-  .manual-block label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 8px;
-  }
-  .manual-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .manual-block input {
-    flex: 1;
-    min-width: 0;
-    background: var(--bg);
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 16px;
-    padding: 10px 12px;
-    border-radius: 6px;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    -moz-appearance: textfield;
-  }
-  .manual-block input::-webkit-outer-spin-button,
-  .manual-block input::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
-  }
-  .manual-block input:focus { outline: none; border-color: var(--amber); }
-  .manual-block .unit-tag {
-    font-size: 12px;
-    color: var(--text-dim);
-    white-space: nowrap;
+  .header-title .period { color: var(--accent); }
+  .header-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--text-dim); width: 38px; height: 38px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s ease;
     flex-shrink: 0;
   }
+  .header-btn:active { color: var(--text); border-color: var(--text-dim); transform: scale(0.95); }
+  .header-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-  .prep-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-  }
-  .prep-card.active {
-    border-color: var(--amber);
-    background: linear-gradient(180deg, var(--surface) 0%, var(--amber-dim) 100%);
-  }
-  .prep-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-  .prep-checkbox {
-    width: 22px;
-    height: 22px;
-    border: 1.5px solid var(--border-strong);
-    border-radius: 4px;
-    background: var(--bg);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .prep-checkbox.checked {
-    background: var(--amber);
-    border-color: var(--amber);
-  }
-  .prep-checkbox.checked::after {
-    content: '';
-    width: 6px;
-    height: 10px;
-    border: solid var(--amber-fg);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg) translate(-1px, -1px);
-  }
-  .prep-name {
-    flex: 1;
-    font-family: var(--serif);
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--text);
-    letter-spacing: -0.01em;
-  }
-  .prep-actions { display: flex; gap: 4px; }
-  .prep-action-btn {
-    background: none;
-    border: none;
-    color: var(--text-faint);
-    font-size: 14px;
-    cursor: pointer;
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-  }
-  .prep-action-btn:active { color: var(--amber); }
-  .prep-action-btn.del:active { color: var(--danger); }
-
-  .prep-norm {
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-left: 32px;
-    font-variant-numeric: tabular-nums;
-  }
-  .prep-output {
-    margin-top: 10px;
-    margin-left: 32px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .po-main {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-  .po-main .arrow { color: var(--text-faint); font-size: 13px; }
-  .po-main .ml-min {
-    font-family: var(--serif);
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--amber);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-  }
-  .po-main .ml-min.dimmed { color: var(--text-faint); }
-  .po-main .ml-unit {
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-  .po-runtime {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--teal);
-    font-variant-numeric: tabular-nums;
-  }
-  .po-runtime.dimmed { color: var(--text-faint); }
-  .po-runtime .rt-label {
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-
-  .prep-reverse {
-    margin-top: 10px;
-    margin-left: 32px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--border);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .prep-reverse input {
-    width: 80px;
-    background: var(--bg);
-    border: 1px solid var(--teal);
-    color: var(--teal);
-    font-family: var(--mono);
-    font-size: 14px;
-    padding: 6px 8px;
-    border-radius: 5px;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    -moz-appearance: textfield;
-  }
-  .prep-reverse input::-webkit-outer-spin-button,
-  .prep-reverse input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .prep-reverse input:focus { outline: none; border-color: var(--teal); }
-  .prep-reverse .rev-unit {
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .prep-reverse .rev-arrow { color: var(--text-faint); font-size: 13px; }
-  .prep-reverse .rev-result {
-    font-family: var(--mono);
-    font-size: 15px;
-    color: var(--teal);
-    font-variant-numeric: tabular-nums;
-  }
-  .prep-reverse .rev-result-unit {
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .prep-edit input {
-    background: var(--bg);
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    padding: 10px 12px;
-    border-radius: 6px;
-  }
-  .prep-edit input:focus { outline: none; border-color: var(--amber); }
-  .prep-edit .field-row { display: flex; align-items: center; gap: 8px; }
-  .prep-edit label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    width: 70px;
-    flex-shrink: 0;
-  }
-  .prep-edit .field-row input { flex: 1; min-width: 0; text-align: right; font-variant-numeric: tabular-nums; }
-  .prep-edit .field-row .unit-tag { font-size: 12px; color: var(--text-dim); width: 36px; flex-shrink: 0; }
-  .prep-edit .edit-actions { display: flex; gap: 8px; margin-top: 4px; }
-  .prep-edit .edit-actions .btn { padding: 10px; font-size: 12px; }
-
-  .add-prep-btn {
-    background: none;
-    border: 1px dashed var(--border-strong);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 100%;
-  }
-  .add-prep-btn:active { color: var(--amber); border-color: var(--amber); }
-
-  footer {
-    text-align: center;
-    color: var(--text-faint);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    padding-top: 32px;
-  }
-
+  .screen { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+  .screen.hidden { display: none; }
   .hidden { display: none !important; }
 
-  /* Session entry button on home */
-  .session-entry {
-    display: block;
-    width: 100%;
+  /* HOME */
+  .list-wrap { padding: 12px 16px 24px; }
+  .card-row {
     background: var(--surface);
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .card-row:active { background: var(--surface-2); transform: scale(0.99); }
+  .card-row-head {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .card-row-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 400; font-size: 1.1rem;
     color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    letter-spacing: 0.08em;
-    padding: 14px;
-    border-radius: 10px;
-    text-align: center;
-    cursor: pointer;
-    margin-bottom: 24px;
-  }
-  .session-entry:active { filter: brightness(0.92); }
-  .session-entry.active {
-    background: linear-gradient(180deg, var(--surface) 0%, var(--amber-dim) 100%);
-    border-color: var(--amber);
-    color: var(--amber);
-  }
-  .session-entry.active .se-status {
-    color: var(--amber);
-    font-weight: 600;
-  }
-  .session-entry .se-meta {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  /* Session view */
-  .session-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-    gap: 8px;
-  }
-  .session-back {
-    background: none;
-    border: 1px solid var(--border-strong);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .session-back:active { color: var(--amber); border-color: var(--amber); }
-  .session-title {
-    font-family: var(--serif);
-    font-weight: 600;
-    font-size: 22px;
-    letter-spacing: -0.01em;
-    color: var(--amber);
     flex: 1;
-    text-align: center;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-
-  /* Pre-start form */
-  .session-form {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 14px;
-  }
-  .form-label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+  .card-row-meta {
+    font-size: 0.7rem;
     color: var(--text-faint);
-    margin-bottom: 8px;
+    letter-spacing: 0.06em;
   }
-  .form-input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 15px;
-    padding: 10px 12px;
-    border-radius: 6px;
+  .card-row-arrow {
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
   }
-  .form-input:focus { outline: none; border-color: var(--amber); }
-  .variety-suggestions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
-  }
-  .variety-chip {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 5px 9px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .variety-chip:active { color: var(--amber); border-color: var(--amber); }
-
-  /* Container types list */
-  .ctype-row {
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
+  .mini-counters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .mini-counter {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 4px;
+    background: var(--surface-2);
     border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .ctype-menu-btn {
-    background: none;
-    border: none;
-    color: var(--text-faint);
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    padding: 0;
-    margin-right: -4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .ctype-menu-btn:active { color: var(--amber); background: var(--surface-2); }
-  .ctype-info {
-    flex: 1;
     min-width: 0;
   }
-  .ctype-size {
-    font-family: var(--serif);
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--teal);
+  .mini-counter-name {
+    font-size: 0.58rem;
+    color: var(--text-faint);
+    text-transform: uppercase; letter-spacing: 0.05em;
     margin-bottom: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    width: 100%; text-align: center;
   }
-  .ctype-name {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
+  .mini-counter-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem; font-weight: 400;
+    color: var(--accent);
+    font-feature-settings: 'tnum';
   }
-  .ctype-meta {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
-    font-variant-numeric: tabular-nums;
-  }
-  .ctype-count {
-    font-family: var(--serif);
-    font-size: 22px;
-    color: var(--amber);
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-    min-width: 36px;
-    text-align: right;
-  }
-  .ctype-add-btn {
-    background: var(--amber);
-    color: var(--amber-fg);
-    border: none;
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    padding: 10px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    min-width: 56px;
-  }
-  .ctype-add-btn:active { filter: brightness(0.92); }
-  .ctype-remove {
-    background: none;
-    border: none;
-    color: var(--text-faint);
-    font-size: 16px;
-    cursor: pointer;
-    width: 28px;
-    height: 28px;
-  }
-  .ctype-remove:active { color: var(--danger); }
 
-  .add-ctype-form {
-    background: var(--surface-2);
-    border: 1px dashed var(--border-strong);
-    border-radius: 8px;
-    padding: 12px;
-    margin-top: 8px;
+  .add-card-btn {
+    width: 100%;
+    padding: 18px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    color: var(--text-dim);
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 6px;
   }
-  .add-ctype-form .field-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .add-ctype-form .field-row label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  .add-card-btn:active { color: var(--text); border-color: var(--text-dim); }
+
+  .empty-state {
+    text-align: center; padding: 60px 20px;
     color: var(--text-faint);
-    width: 56px;
+    font-family: 'Fraunces', serif; font-style: italic;
+  }
+
+  /* CARD DETAIL */
+  .meta-block {
+    margin: 12px 16px 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .meta-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.92rem;
+  }
+  .meta-row:first-of-type { border-top: none; padding-top: 4px; }
+  .meta-row:last-of-type { padding-bottom: 4px; }
+  .meta-icon {
+    color: var(--text-faint);
+    flex-shrink: 0; width: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .meta-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .meta-label {
+    color: var(--text-faint);
+    font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    width: 92px; flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .meta-value { color: var(--text); word-break: break-word; flex: 1; }
+  .meta-value.empty { color: var(--text-faint); font-style: italic; }
+  .meta-value a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); }
+  .meta-value .unit { color: var(--text-faint); margin-left: 4px; font-size: 0.85em; }
+
+  .meta-edit-row {
+    display: flex; justify-content: flex-end; padding: 0 16px 0;
+  }
+  .text-btn {
+    background: none; border: none;
+    color: var(--text-dim);
+    font-family: inherit; font-size: 0.8rem;
+    cursor: pointer; padding: 6px 10px;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+  .text-btn:active { color: var(--text); }
+
+  .counters-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 4px 16px 24px;
+  }
+  .counter-tile {
+    aspect-ratio: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex; flex-direction: column;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
+  }
+  .counter-tile.pulsing { transform: scale(0.97); }
+  .counter-tile .glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at center, var(--tile-color, var(--accent)) 0%, transparent 65%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    mix-blend-mode: soft-light;
+  }
+  .counter-tile.pulsing .glow { opacity: 0.5; transition: opacity 0.05s; }
+  .counter-tile-header {
+    display: flex; align-items: center; gap: 6px;
+    z-index: 1;
+    padding-right: 32px;
+  }
+  .counter-tile-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--tile-color, var(--accent));
     flex-shrink: 0;
   }
-  .add-ctype-form .field-row input {
-    flex: 1;
-    min-width: 0;
-    background: var(--bg);
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    padding: 8px 10px;
-    border-radius: 4px;
+  .counter-tile-name {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .add-ctype-form .field-row input:focus { outline: none; border-color: var(--amber); }
-  .add-ctype-form .presets {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 4px;
-    margin-bottom: 8px;
-    margin-left: 62px;
+  .tile-menu-btn {
+    position: absolute; top: 8px; right: 8px;
+    width: 30px; height: 30px;
+    background: transparent; border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    z-index: 3;
+    font-size: 1.1rem;
+    transition: all 0.2s;
   }
-  .add-ctype-form .actions {
-    display: flex;
-    gap: 6px;
+  .tile-menu-btn:active { background: var(--surface-2); color: var(--text); }
+  .counter-tile-value {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(2.6rem, 10vw, 3.6rem);
+    line-height: 1;
+    color: var(--tile-color, var(--accent));
+    margin-top: auto;
+    align-self: flex-end;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
+    z-index: 1;
+    letter-spacing: -0.03em;
+  }
+  .counter-tile-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    align-self: flex-end;
+    margin-top: 2px;
+    z-index: 1;
+    text-align: right;
+  }
+  .counter-tile-corr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--accent);
+    opacity: 0.7;
+    align-self: flex-end;
+    z-index: 1;
+    text-align: right;
+  }
+  .counter-tile-hint {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    align-self: flex-end;
+    z-index: 1;
   }
 
-  /* Active session timer */
-  .session-timer-block {
+  /* ANALYTICS */
+  .analytics-wrap { padding: 8px 16px 24px; }
+  .ana-section {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 24px 16px 18px;
-    text-align: center;
-    margin-bottom: 14px;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
   }
-  .session-timer-block.paused {
-    background: var(--surface-2);
-    border-color: var(--stop-border);
-  }
-  .session-timer {
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: 44px;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: var(--amber);
-    font-variant-numeric: tabular-nums;
-  }
-  .session-timer.paused-text {
-    color: var(--stop-fg);
-  }
-  .session-paused-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--stop-fg);
-    margin-top: 8px;
-  }
-  .session-tonnage {
-    font-family: var(--mono);
-    font-size: 13px;
+  .ana-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.14em;
     color: var(--text-dim);
-    margin-top: 12px;
-    letter-spacing: 0.1em;
+    margin-bottom: 12px;
   }
-  .session-tonnage strong {
-    font-family: var(--serif);
-    font-size: 18px;
-    font-weight: 600;
+  .ana-variety {
+    border-top: 1px solid var(--border);
+    padding: 12px 0;
+  }
+  .ana-variety:first-of-type { border-top: none; padding-top: 0; }
+  .ana-variety:last-of-type { padding-bottom: 0; }
+  .ana-variety-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
     color: var(--text);
-    letter-spacing: -0.01em;
-  }
-  .session-pause-btn {
-    background: transparent;
-    border: 1px solid var(--border-strong);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 14px;
-  }
-  .session-pause-btn:active { color: var(--amber); border-color: var(--amber); }
-
-  /* Prep cards in session */
-  .session-prep-card {
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-  }
-  .session-prep-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
     margin-bottom: 6px;
   }
-  .session-prep-name {
-    font-family: var(--serif);
-    font-size: 17px;
-    font-weight: 500;
-    color: var(--text);
-  }
-  .session-prep-volume {
-    font-family: var(--serif);
-    font-size: 18px;
-    color: var(--amber);
-    font-variant-numeric: tabular-nums;
-    font-weight: 500;
-  }
-  .session-prep-actual {
-    font-size: 11px;
-    color: var(--teal);
-    margin-bottom: 10px;
-    letter-spacing: 0.05em;
-    font-variant-numeric: tabular-nums;
-  }
-  .session-prep-actual.dimmed { color: var(--text-faint); }
-  .session-prep-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
-  .session-prep-meta {
-    font-size: 11px;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Log */
-  .session-log {
-    margin-top: 8px;
-  }
-  .log-toggle {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 10px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .log-toggle:active { color: var(--amber); border-color: var(--amber); }
-  .log-list {
-    margin-top: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    max-height: 280px;
-    overflow-y: auto;
-  }
-  .log-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .log-item:last-child { border-bottom: none; }
-  .log-time {
-    font-family: var(--mono);
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-    width: 56px;
-    flex-shrink: 0;
-  }
-  .log-desc {
-    flex: 1;
-    color: var(--text);
-    min-width: 0;
-  }
-  .log-remove {
-    background: none;
-    border: none;
+  .ana-variety-name .fields-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
     color: var(--text-faint);
-    font-size: 14px;
-    cursor: pointer;
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
+    margin-left: 8px;
+    font-style: normal;
   }
-  .log-remove:active { color: var(--danger); }
-  .log-empty {
-    padding: 16px;
-    text-align: center;
-    color: var(--text-faint);
-    font-size: 12px;
+  .ana-stat-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 3px 0;
+    font-size: 0.88rem;
   }
-
-  /* End/start session button */
-  .session-major-btn {
-    width: 100%;
-    padding: 16px;
-    background: var(--amber);
-    color: var(--amber-fg);
-    border: none;
-    border-radius: 8px;
-    font-family: var(--mono);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-top: 24px;
-  }
-  .session-major-btn:active { filter: brightness(0.92); }
-  .session-major-btn.danger {
-    background: var(--stop-bg);
-    color: var(--stop-fg);
-    border: 1px solid var(--stop-border);
-  }
-
-  /* Prep selection chips for pre-start */
-  .prep-select-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .prep-select-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .prep-select-row.selected {
-    border-color: var(--amber);
-    background: var(--amber-dim);
-  }
-  .prep-select-row .pscb {
-    width: 20px; height: 20px;
-    border: 1.5px solid var(--border-strong);
-    border-radius: 4px;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .prep-select-row.selected .pscb {
-    background: var(--amber);
-    border-color: var(--amber);
-  }
-  .prep-select-row.selected .pscb::after {
-    content: '';
-    width: 6px; height: 10px;
-    border: solid var(--amber-fg);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg) translate(-1px, -1px);
-  }
-  .prep-select-name {
-    font-family: var(--serif);
-    font-size: 16px;
-    flex: 1;
-  }
-  .prep-select-meta {
-    font-size: 11px;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Completion summary */
-  .summary-card {
-    background: var(--surface);
-    border: 1px solid var(--amber);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 14px;
-  }
-  .summary-title {
-    font-family: var(--serif);
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--amber);
-    margin-bottom: 4px;
-  }
-  .summary-subtitle {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 18px;
-    letter-spacing: 0.05em;
-  }
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 8px 0;
-    border-bottom: 1px dashed var(--border);
-    gap: 12px;
-  }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-key {
-    font-size: 12px;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .summary-val {
-    font-family: var(--serif);
-    font-size: 17px;
+  .ana-stat-label { color: var(--text-dim); }
+  .ana-stat-value {
+    font-family: 'JetBrains Mono', monospace;
     color: var(--text);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
+    font-feature-settings: 'tnum';
   }
-  .summary-val.highlight { color: var(--amber); font-weight: 600; }
-  .summary-section {
-    margin-top: 16px;
-    padding-top: 14px;
+  .ana-stat-percent {
+    color: var(--accent);
+    font-size: 0.78rem;
+    margin-left: 6px;
+  }
+  .ana-total {
     border-top: 1px solid var(--border);
+    margin-top: 10px;
+    padding-top: 10px;
   }
-  .summary-section-label {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 10px;
-  }
+  .ana-total .ana-stat-label { color: var(--text); font-weight: 400; }
+  .ana-total .ana-stat-value { color: var(--accent); }
 
-  /* Inline edit forms for session tiles */
-  .inline-edit {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-top: 6px;
+  /* OVERLAYS */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 50; display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
   }
-  .inline-edit .field-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .inline-edit label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    width: 70px;
-    flex-shrink: 0;
-  }
-  .inline-edit input {
-    flex: 1;
-    min-width: 0;
-    background: var(--bg);
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    padding: 8px 10px;
-    border-radius: 4px;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-  .inline-edit input[type="text"] { text-align: left; }
-  .inline-edit input:focus { outline: none; border-color: var(--amber); }
-  .inline-edit .unit-tag {
-    font-size: 12px;
-    color: var(--text-dim);
-    width: 40px;
-    flex-shrink: 0;
-  }
-  .inline-edit .actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-  }
-  .inline-edit .actions .btn {
-    padding: 10px;
-    font-size: 12px;
-  }
-  .inline-edit .delete-btn {
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--stop-border);
-    border-radius: 6px;
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    padding: 10px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 4px;
-  }
-  .inline-edit .delete-btn.armed {
-    background: var(--stop-bg);
-    color: var(--stop-fg);
-    border-color: var(--stop-fg);
-    font-weight: 600;
-  }
-
-  /* Two-stage confirm buttons */
-  .confirm-btn {
-    transition: background 120ms;
-  }
-  .confirm-btn.armed {
-    background: var(--stop-bg) !important;
-    color: var(--stop-fg) !important;
-    border-color: var(--stop-fg) !important;
-  }
-  [data-theme="light"] .confirm-btn.armed {
-    background: var(--stop-bg) !important;
-    color: var(--stop-fg) !important;
-  }
-
-  /* Session controls below */
-  .session-controls {
-    display: flex;
-    gap: 8px;
-    margin-top: 24px;
-  }
-  .session-delete-btn {
-    flex: 0 0 auto;
-    padding: 16px;
-    background: transparent;
-    color: var(--text-faint);
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-  }
-  .session-delete-btn.armed {
-    color: var(--danger);
-    border-color: var(--danger);
-    background: var(--stop-bg);
-  }
-
-  /* Modal */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-    padding: 20px;
-  }
-  [data-theme="light"] .modal-backdrop {
-    background: rgba(0, 0, 0, 0.4);
-  }
+  .overlay.visible { opacity: 1; pointer-events: auto; }
+  #overlay-confirm { z-index: 100; }
+  #overlay-confirm .modal { max-width: 360px; }
   .modal {
     background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 460px;
-    margin: auto;
-    padding: 20px;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    width: 100%; max-width: 480px;
+    max-height: 90vh; overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-bottom: max(env(safe-area-inset-bottom), 8px);
+  }
+  .overlay.visible .modal { transform: translateY(0); }
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--text-faint); border-radius: 2px;
+    margin: 12px auto 8px;
   }
   .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-    gap: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 22px 16px;
+    border-bottom: 1px solid var(--border);
   }
   .modal-title {
-    font-family: var(--serif);
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--amber);
-    letter-spacing: -0.01em;
-    flex: 1;
-    min-width: 0;
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-weight: 300; font-size: 1.3rem;
   }
   .modal-close {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 22px;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    line-height: 1;
-    padding: 0;
-    flex-shrink: 0;
+    background: none; border: none; color: var(--text-dim);
+    cursor: pointer; padding: 6px; font-family: inherit; font-size: 1.05rem;
   }
-  .modal-close:active { color: var(--amber); background: var(--surface-2); }
-  .modal-section {
-    margin-bottom: 16px;
+
+  .form-group { padding: 12px 22px; }
+  .form-label {
+    display: block; font-size: 0.7rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
   }
-  .modal-section:last-child { margin-bottom: 0; }
-  .modal-label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+  .form-hint {
+    font-size: 0.72rem;
     color: var(--text-faint);
-    margin-bottom: 8px;
-  }
-  .modal-input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 16px;
-    padding: 10px 12px;
-    border-radius: 6px;
-    font-variant-numeric: tabular-nums;
-    -moz-appearance: textfield;
-  }
-  .modal-input::-webkit-outer-spin-button,
-  .modal-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .modal-input:focus { outline: none; border-color: var(--amber); }
-  .modal-input.text-right { text-align: right; }
-  .modal-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .modal-row .modal-input { flex: 1; min-width: 0; }
-  .modal-row .unit-tag {
-    font-size: 12px;
-    color: var(--text-dim);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .modal-hint {
-    font-size: 11px;
-    color: var(--text-dim);
     margin-top: 6px;
-    line-height: 1.4;
+    font-family: 'JetBrains Mono', monospace;
   }
-  .modal-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
+  .form-input {
+    width: 100%; background: var(--surface-2);
+    border: 1px solid var(--border); color: var(--text);
+    padding: 11px 13px; border-radius: 8px;
+    font-family: inherit; font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s ease;
   }
-  .modal-actions .btn { flex: 1; padding: 14px; }
+  .form-input:focus { border-color: var(--text-dim); }
 
-  /* Chip selectors */
-  .chip-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+  .form-row { display: flex; gap: 8px; }
+  .form-row .form-input { flex: 1; }
+  .form-row .form-input.unit { flex: 0 0 80px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+  .swatch {
+    aspect-ratio: 1; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.2s ease;
   }
-  .chip {
-    background: var(--bg);
-    border: 1px solid var(--border-strong);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 13px;
+  .swatch.selected { border-color: var(--text); transform: scale(1.12); }
+
+  .sounds { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sound-chip {
     padding: 7px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-  }
-  .chip.selected {
-    background: var(--amber);
-    color: var(--amber-fg);
-    border-color: var(--amber);
-  }
-  .chip:active { filter: brightness(0.92); }
-  .chip-add {
-    background: transparent;
-    border: 1px dashed var(--border-strong);
-    color: var(--text-faint);
-  }
-  .chip-remove {
-    display: inline-block;
-    margin-left: 5px;
-    font-size: 11px;
-    opacity: 0.5;
-    line-height: 1;
-    vertical-align: middle;
-  }
-  .chip-remove:active { opacity: 1; color: var(--danger); }
-
-  /* Delete button in modal */
-  .modal-delete-btn {
-    width: 100%;
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--stop-border);
-    border-radius: 6px;
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    padding: 12px;
-    cursor: pointer;
-    margin-top: 16px;
-  }
-  .modal-delete-btn.armed {
-    background: var(--stop-bg);
-    color: var(--stop-fg);
-    border-color: var(--stop-fg);
-    font-weight: 600;
-  }
-
-  /* History list */
-  .history-row {
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-  }
-  .history-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 8px;
-  }
-  .history-num {
-    font-family: var(--serif);
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--amber);
-  }
-  .history-date {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
-  .history-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-    font-variant-numeric: tabular-nums;
-  }
-  .history-meta strong { color: var(--text); font-weight: 500; }
-  .history-actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
-  }
-  .history-actions button {
-    flex: 1;
-    background: transparent;
+    background: var(--surface-2);
     border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    padding: 8px;
-    border-radius: 4px;
-    cursor: pointer;
+    color: var(--text-dim); border-radius: 18px;
+    cursor: pointer; font-family: inherit;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
   }
-  .history-actions button:active { color: var(--amber); border-color: var(--amber); }
-  .history-actions button.del:active { color: var(--danger); border-color: var(--danger); }
-  .history-actions button.armed { color: var(--danger); border-color: var(--danger); background: var(--stop-bg); }
+  .sound-chip.selected {
+    color: var(--text); border-color: var(--text-dim);
+    background: var(--surface);
+  }
 
-  /* Counter (− N +) */
-  .counter-row {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    border: 1px solid var(--border-strong);
-    border-radius: 6px;
-    overflow: hidden;
+  .toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    gap: 16px;
   }
-  .counter-btn {
-    background: var(--bg);
-    border: none;
-    color: var(--amber);
-    font-family: var(--mono);
-    font-size: 22px;
-    font-weight: 600;
-    width: 56px;
-    cursor: pointer;
+  .toggle-label { font-size: 0.92rem; color: var(--text); }
+  .toggle-sub {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .toggle {
+    position: relative; width: 44px; height: 24px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px; cursor: pointer;
+    transition: all 0.2s ease;
     flex-shrink: 0;
   }
-  .counter-btn:active { background: var(--surface-2); }
-  .counter-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .counter-value {
-    flex: 1;
-    background: var(--bg);
-    border: none;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    color: var(--text);
-    font-family: var(--serif);
-    font-size: 22px;
-    font-weight: 500;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-    padding: 8px;
-    min-width: 0;
-    -moz-appearance: textfield;
+  .toggle::after {
+    content: '';
+    position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px;
+    background: var(--text-faint);
+    border-radius: 50%;
+    transition: all 0.2s ease;
   }
-  .counter-value::-webkit-outer-spin-button,
-  .counter-value::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
-  }
-  .counter-value:focus { outline: none; }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle.on::after { left: 22px; background: var(--bg); }
 
-  .summary-line {
-    background: var(--bg);
+  .modal-section-title {
+    padding: 18px 22px 6px;
+    font-size: 0.7rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+  .modal-section-title:first-child { border-top: none; margin-top: 0; }
+
+  .menu-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .menu-item:active { background: var(--surface-2); }
+  .menu-item .item-color { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .menu-item .item-name {
+    flex: 1; font-size: 0.93rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .menu-item .item-arrow { color: var(--text-faint); font-size: 1rem; }
+
+  .modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    flex: 1; min-width: 100px;
+    padding: 12px 14px;
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px;
+    cursor: pointer; font-family: inherit;
+    font-size: 0.88rem; transition: all 0.2s ease;
+  }
+  .btn:active { background: var(--surface-2); transform: scale(0.98); }
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent); font-weight: 500;
+  }
+  .btn-primary:active { opacity: 0.85; background: var(--accent); }
+  .btn-danger {
+    color: var(--danger); border-color: rgba(204, 102, 102, 0.3);
+  }
+  .btn-danger:active { background: rgba(204, 102, 102, 0.1); }
+  .btn-full { flex: 1 1 100%; }
+
+  /* Tile-menu number stepper */
+  .stepper {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 12px;
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .stepper-btn {
+    width: 36px; height: 36px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .stepper-btn:active { background: var(--surface); }
+  .stepper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
     text-align: center;
-    font-family: var(--mono);
-    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    outline: none;
+    min-width: 0;
+  }
+
+  .computed-preview {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 22px 4px;
     color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    text-align: center;
   }
-  .summary-line strong {
-    color: var(--amber);
-    font-family: var(--serif);
-    font-size: 16px;
-    font-weight: 600;
+  .computed-preview b { color: var(--accent); font-weight: 500; }
+
+  .toast {
+    position: fixed;
+    bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    color: var(--text);
+    font-size: 0.85rem;
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 90vw;
+    text-align: center;
   }
+  .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<div id="mainView">
-<header>
-  <div class="title" data-i18n="title">Спрея</div>
-  <div class="header-controls">
-    <button class="theme-btn" id="themeBtn" title="Theme">☾</button>
-    <div class="lang-toggle" id="langToggle">
-      <button data-lang="uk">UK</button>
-      <button data-lang="en">EN</button>
+<div class="app">
+  <header class="header">
+    <button class="header-btn hidden" id="btn-back" aria-label="Назад">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div style="width:38px" id="left-spacer"></div>
+    <div class="header-title" id="header-title">грядка<span class="period">.</span></div>
+    <button class="header-btn" id="btn-menu" aria-label="Меню">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>
+    </button>
+  </header>
+
+  <div class="screen" id="screen-list">
+    <div class="list-wrap" id="cards-container"></div>
+  </div>
+
+  <div class="screen hidden" id="screen-card">
+    <div class="meta-block" id="meta-block"></div>
+    <div class="meta-edit-row">
+      <button class="text-btn" id="btn-edit-meta">редагувати опис</button>
+    </div>
+    <div class="counters-grid" id="counters-grid"></div>
+  </div>
+
+  <div class="screen hidden" id="screen-analytics">
+    <div class="analytics-wrap" id="analytics-wrap"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-meta">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title">Опис поля</div><button class="modal-close" data-close>✕</button></div>
+    <div class="form-group">
+      <label class="form-label">Назва</label>
+      <input type="text" class="form-input" id="meta-name" maxlength="60">
+    </div>
+    <div id="meta-fields"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary btn-full" id="btn-meta-save">Зберегти</button>
     </div>
   </div>
-</header>
+</div>
 
-<button class="session-entry" id="sessionEntry"></button>
+<div class="overlay" id="overlay-menu">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="menu-title">Меню</div><button class="modal-close" data-close>✕</button></div>
+    <div id="menu-body"></div>
+  </div>
+</div>
 
-<section>
-  <h2 data-i18n="potatoSpeed">Швидкість картоплі</h2>
-
-  <div class="timer-block">
-    <div class="timer-display idle" id="timerDisplay">00:00:00</div>
-    <div class="lap-display hidden" id="lapDisplay">
-      <span class="lap-display-label">КОЛО</span>
-      <span class="lap-display-time" id="lapTime">00:00:00</span>
+<div class="overlay" id="overlay-counter">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title">Матеріал</div><button class="modal-close" data-close>✕</button></div>
+    <div class="form-group">
+      <label class="form-label">Назва</label>
+      <input type="text" class="form-input" id="counter-name" maxlength="40">
     </div>
-
-    <div class="btn-row" style="margin-bottom:14px;">
-      <button class="btn btn-primary" id="timerBtn" data-i18n="start">СТАРТ</button>
-      <button class="btn btn-secondary hidden" id="resetBtn" data-i18n="reset" style="flex:0 0 44%;">Скинути</button>
+    <div class="form-group">
+      <label class="form-label">Колір</label>
+      <div class="swatches" id="counter-swatches"></div>
     </div>
+    <div class="form-group">
+      <label class="form-label">Звук</label>
+      <div class="sounds" id="counter-sounds"></div>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">Вібрація</span>
+      <div class="toggle" id="counter-vibrate"></div>
+    </div>
+    <div class="modal-section-title">Одиниця виміру</div>
+    <div class="form-group">
+      <label class="form-label">Підпис одиниці</label>
+      <input type="text" class="form-input" id="counter-unit-label" placeholder="кг, л, шт..." maxlength="10">
+      <div class="form-hint">залиш порожнім, щоб не рахувати в одиницях</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Скільки в одній одиниці</label>
+      <input type="number" step="any" class="form-input" id="counter-unit-value" placeholder="напр. 12100">
+      <div class="form-hint">наприклад, трейлер = 12100 кг</div>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Це насіння</div>
+        <div class="toggle-sub">входить у підсумок по сортах</div>
+      </div>
+      <div class="toggle" id="counter-role-seed"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="btn-counter-delete">Видалити</button>
+      <button class="btn btn-primary" id="btn-counter-save">Зберегти</button>
+    </div>
+  </div>
+</div>
 
-    <div class="streams">
-      <div class="streams-label" data-i18n="streamsLabel">Ваги ємкостей</div>
-      <div id="streamsList"></div>
-      <button class="add-stream-btn" id="addStreamBtn" data-i18n="addStream">+ Додати потік</button>
-      <div class="stream-total">
-        <span class="label" data-i18n="totalDelta">Набрано</span>
-        <span class="value"><span id="streamTotal">0</span> <span data-i18n="kg">кг</span></span>
-        <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
-          <input type="number" id="manualSpeedVis" inputmode="decimal" placeholder="0" style="width:70px;background:var(--bg);border:1px solid var(--teal);color:var(--teal);font-family:var(--mono);font-size:14px;padding:4px 8px;border-radius:5px;text-align:center;font-variant-numeric:tabular-nums;-moz-appearance:textfield;outline:none;">
-          <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);font-family:var(--mono);" data-i18n="kgPerMin">кг/хв</span>
-        </div>
+<div class="overlay" id="overlay-tile">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><div class="modal-title" id="tile-title">Матеріал</div><button class="modal-close" data-close>✕</button></div>
+    <div class="form-group">
+      <label class="form-label">Кількість</label>
+      <div class="stepper">
+        <button class="stepper-btn" id="tile-minus">−</button>
+        <input type="number" id="tile-count" step="1">
+        <button class="stepper-btn" id="tile-plus">+</button>
       </div>
     </div>
+    <div class="form-group" id="tile-correction-group">
+      <label class="form-label">Корекція <span id="tile-correction-unit"></span></label>
+      <input type="number" step="any" class="form-input" id="tile-correction" placeholder="0">
+      <div class="form-hint">додатне — додати, від'ємне — забрати (повернення)</div>
+    </div>
+    <div class="computed-preview" id="tile-preview"></div>
+    <div class="modal-footer">
+      <button class="btn" id="btn-tile-settings">Налаштування</button>
+      <button class="btn btn-danger" id="btn-tile-reset">Скинути</button>
+      <button class="btn btn-primary btn-full" id="btn-tile-save">Зберегти</button>
+    </div>
   </div>
-
-  <input type="number" id="manualSpeed" inputmode="decimal" placeholder="0" style="display:none">
-</section>
-
-<div class="speed-display" style="display:block;text-align:center;padding:20px 0 16px;">
-  <div class="num zero" id="speedNum">0</div>
-  <div class="unit" data-i18n="kgPerMin">кг/хв</div>
-  <div class="secondary"><span id="speedHour">0</span> <span data-i18n="kgPerHour">кг/год</span></div>
 </div>
 
-<section>
-  <h2 data-i18n="preparations">Препарати</h2>
-  <div id="prepList"></div>
-  <button class="add-prep-btn" id="addPrepBtn" data-i18n="addPrep">+ Додати препарат</button>
-</section>
-
-<footer>СПРЕЯ · v0.6</footer>
-
-<button class="add-stream-btn" id="historyEntry" style="margin-top:24px;">📋 <span data-i18n="sessionsBtn">Завершені сесії</span></button>
+<div class="overlay" id="overlay-confirm">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="form-group" style="padding:24px 22px 12px;text-align:center">
+      <div id="confirm-message" style="font-size:1rem;color:var(--text);line-height:1.45"></div>
+    </div>
+    <div class="modal-footer" style="padding-top:14px">
+      <button class="btn" id="confirm-cancel">Скасувати</button>
+      <button class="btn btn-danger" id="confirm-ok">Підтвердити</button>
+    </div>
+  </div>
 </div>
 
-<div id="sessionView" class="hidden"></div>
-<div id="historyView" class="hidden"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 'use strict';
 
-var T = {
-  uk: {
-    title: 'Спрея',
-    potatoSpeed: 'Швидкість картоплі',
-    start: 'СТАРТ',
-    stop: 'КОЛО',
-    lap: 'КОЛО',
-    reset: 'Скинути',
-    streamsLabel: 'Ваги',
-    addStream: '+ Додати ваги',
-    totalDelta: 'Набрано',
-    before: 'Було',
-    after: 'Стало',
-    orManually: 'Або вручну',
-    sprayerSpeed: 'Швидкість спреї',
-    kg: 'кг',
-    kgPerMin: 'кг/хв',
-    kgPerHour: 'кг/год',
-    mlPerTon: 'мл/т',
-    mlPerMin: 'мл/хв',
-    preparations: 'Препарати',
-    addPrep: '+ Додати препарат',
-    name: 'Назва',
-    norm: 'Норма',
-    saveBtn: 'Зберегти',
-    cancelBtn: 'Скасувати',
-    deleteQ: 'Видалити?',
-    namePlaceholder: 'напр. MAXIM',
-    perLiterLabel: '1 л =',
-    minShort: 'хв',
-    hourShort: 'год',
-    resume: 'ПРОДОВЖИТИ',
-    canVolume: 'Каністра',
-    liter: 'л',
-    sessionBtn: 'Сесія',
-    newSession: 'Нова сесія',
-    activeSessionLabel: 'Триває сесія',
-    sessionNumber: 'Сесія №',
-    variety: 'Сорт',
-    varietyPlaceholder: 'напр. Бельмонда',
-    containerType: 'Ваги',
-    containerLabel: 'Підпис',
-    containerLabelPlaceholder: 'напр. Ящик',
-    weight: 'Вага',
-    addContainerType: '+ Додати ваги',
-    selectPrepsForSession: 'Препарати в цій сесії',
-    startSessionBtn: 'СТАРТ СЕСІЇ',
-    cancelSessionBtn: '← Назад',
-    needContainer: 'Додайте хоча б один тип ємкості',
-    pcs: 'шт',
-    addContainerEvent: '+1',
-    addCanisterEvent: '+1 кан',
-    totalTonnage: 'Загальний тоннаж',
-    fact: 'факт',
-    log: 'Журнал',
-    endSessionBtn: 'Завершити сесію',
-    confirmEndSession: 'Завершити сесію?',
-    sessionCompleted: 'Сесія завершена',
-    duration: 'Тривалість',
-    containers: 'Ємкостей',
-    avgSpeed: 'Середня швидкість',
-    closeBtn: 'Закрити',
-    backBtn: '← Назад',
-    pauseBtn: 'Пауза',
-    resumeBtn: 'Продовжити',
-    paused: 'НА ПАУЗІ',
-    sessionsHistoryEmpty: 'Поки що нема завершених сесій',
-    sessionsHistoryLabel: 'Завершені сесії',
-    confirmDouble: 'Ще раз — точно',
-    deleteType: 'Видалити тип',
-    removeFromSession: 'Прибрати з сесії',
-    deleteSession: 'Видалити сесію',
-    typeHasEvents: 'У цьому типі вже є події. Спочатку видаліть їх через журнал, або тапніть «Видалити тип» ще раз — це видалить тип і всі пов\'язані події.',
-    prepHasEvents: 'У цього препарату вже є залиті каністри. Прибрати з сесії — лічильники будуть втрачені. Тапніть ще раз для підтвердження.',
-    kind: 'Тип',
-    size: 'Розмір',
-    sizeNone: 'без розміру',
-    correction: 'Корекція',
-    correctionHint: 'додатне — додати, від\'ємне — забрати',
-    countLabel: 'Лічильник',
-    sessionsBtn: 'Завершені сесії',
-    sessionsList: 'Завершені сесії',
-    noSessions: 'Поки що нема завершених сесій',
-    viewSession: 'Переглянути',
-    addNew: '+ Додати',
-    edit: 'Редагувати',
-    countUnits: 'Кількість штук',
-    correctionKg: 'Корекція (кг)',
-    correctionL: 'Корекція (л)',
-    correctionHintKg: 'додатне — додати, від\'ємне — забрати (повернення)',
-    addKindTitle: 'Новий тип',
-    addKindHint: 'напр. бочка, контейнер',
-    addSizeTitle: 'Новий розмір',
-    addSizeHint: 'напр. насіннєва, технічна'
-  },
-  en: {
-    title: 'Spreya',
-    potatoSpeed: 'Potato throughput',
-    start: 'START',
-    stop: 'LAP',
-    lap: 'LAP',
-    reset: 'Reset',
-    streamsLabel: 'Weights',
-    addStream: '+ Add weights',
-    totalDelta: 'Added',
-    before: 'Before',
-    after: 'After',
-    orManually: 'Or manually',
-    sprayerSpeed: 'Sprayer speed',
-    kg: 'kg',
-    kgPerMin: 'kg/min',
-    kgPerHour: 'kg/h',
-    mlPerTon: 'ml/t',
-    mlPerMin: 'ml/min',
-    preparations: 'Treatments',
-    addPrep: '+ Add treatment',
-    name: 'Name',
-    norm: 'Rate',
-    saveBtn: 'Save',
-    cancelBtn: 'Cancel',
-    deleteQ: 'Delete?',
-    namePlaceholder: 'e.g. MAXIM',
-    perLiterLabel: '1 L =',
-    minShort: 'min',
-    hourShort: 'h',
-    resume: 'RESUME',
-    canVolume: 'Canister',
-    liter: 'L',
-    sessionBtn: 'Session',
-    newSession: 'New session',
-    activeSessionLabel: 'Session in progress',
-    sessionNumber: 'Session #',
-    variety: 'Variety',
-    varietyPlaceholder: 'e.g. Belmonda',
-    containerType: 'Weights',
-    containerLabel: 'Label',
-    containerLabelPlaceholder: 'e.g. Crate',
-    weight: 'Weight',
-    addContainerType: '+ Add weights',
-    selectPrepsForSession: 'Treatments in this session',
-    startSessionBtn: 'START SESSION',
-    cancelSessionBtn: '← Back',
-    needContainer: 'Add at least one container type',
-    pcs: 'pcs',
-    addContainerEvent: '+1',
-    addCanisterEvent: '+1 can',
-    totalTonnage: 'Total tonnage',
-    fact: 'actual',
-    log: 'Log',
-    endSessionBtn: 'End session',
-    confirmEndSession: 'End session?',
-    sessionCompleted: 'Session completed',
-    duration: 'Duration',
-    containers: 'Containers',
-    avgSpeed: 'Average speed',
-    closeBtn: 'Close',
-    backBtn: '← Back',
-    pauseBtn: 'Pause',
-    resumeBtn: 'Resume',
-    paused: 'PAUSED',
-    sessionsHistoryEmpty: 'No completed sessions yet',
-    sessionsHistoryLabel: 'Completed sessions',
-    confirmDouble: 'Tap again to confirm',
-    deleteType: 'Delete type',
-    removeFromSession: 'Remove from session',
-    deleteSession: 'Delete session',
-    typeHasEvents: 'This type has events. Remove them via Log first, or tap «Delete type» again to delete type and all events.',
-    prepHasEvents: 'This treatment already has canisters. Removing — counters will be lost. Tap again to confirm.',
-    kind: 'Kind',
-    size: 'Size',
-    sizeNone: 'no size',
-    correction: 'Correction',
-    correctionHint: 'positive — add, negative — subtract',
-    countLabel: 'Count',
-    sessionsBtn: 'Completed sessions',
-    sessionsList: 'Completed sessions',
-    noSessions: 'No completed sessions yet',
-    viewSession: 'View',
-    addNew: '+ Add',
-    edit: 'Edit',
-    countUnits: 'Count',
-    correctionKg: 'Correction (kg)',
-    correctionL: 'Correction (L)',
-    correctionHintKg: 'positive — add, negative — subtract (return)',
-    addKindTitle: 'New kind',
-    addKindHint: 'e.g. barrel, container',
-    addSizeTitle: 'New size',
-    addSizeHint: 'e.g. seed, technical'
-  }
+const KEY = 'lichylnyk.v2';
+const Store = {
+  _hasLS: (() => { try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); return true; } catch(e) { return false; }})(),
+  _mem: {},
+  get(k) { try { if (this._hasLS) { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }} catch(e){} return this._mem[k] || null; },
+  set(k, v) { try { if (this._hasLS) localStorage.setItem(k, JSON.stringify(v)); else this._mem[k] = v; } catch(e) { this._mem[k] = v; }}
 };
 
-var STORAGE_KEY = 'spreya:v1';
-var PRESETS = [1000, 1100, 1250];
-
-var state = {
-  lang: 'uk',
-  theme: 'dark',
-  manualSpeed: 0,
-  preparations: [
-    { id: 1, name: 'MAXIM', norm: 250, canVolume: 5, active: true }
-  ],
-  timer: { running: false, startMs: null, elapsedMs: 0, frozenElapsedMs: 0, lastLapMs: 0 },
-  streams: [],
-  editingPrepId: null,
-  view: 'main',
-  session: null,
-  sessions: [],
-  varieties: [],
-  containerKinds: ['ящик', 'мішок'],
-  sizes: ['крупна', 'середня', 'дрібна'],
-  modal: null
-};
-
-var timerInterval = null;
-
-function loadState() {
-  try {
-    var raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    var data = JSON.parse(raw);
-    if (data.lang) state.lang = data.lang;
-    if (data.theme === 'light' || data.theme === 'dark') state.theme = data.theme;
-    if (typeof data.manualSpeed === 'number') state.manualSpeed = data.manualSpeed;
-    if (Array.isArray(data.preparations)) {
-      state.preparations = data.preparations.map(function(p) {
-        if (p.canVolume == null) p.canVolume = 5;
-        return p;
-      });
-    }
-    if (data.session) {
-      state.session = data.session;
-      // Migrate container types: add kind/size if missing
-      if (state.session.containerTypes) {
-        state.session.containerTypes.forEach(function(t) {
-          if (!t.kind) t.kind = 'ящик';
-          if (t.size === undefined) t.size = '';
-        });
-      }
-    }
-    if (Array.isArray(data.sessions)) {
-      state.sessions = data.sessions.map(function(s) {
-        if (s.containerTypes) {
-          s.containerTypes.forEach(function(t) {
-            if (!t.kind) t.kind = 'ящик';
-            if (t.size === undefined) t.size = '';
-          });
-        }
-        return s;
-      });
-    }
-    if (Array.isArray(data.varieties)) state.varieties = data.varieties;
-    if (Array.isArray(data.containerKinds) && data.containerKinds.length > 0) state.containerKinds = data.containerKinds;
-    // Permanent kinds are always available
-    PERMANENT_KINDS.forEach(function(k) {
-      if (state.containerKinds.indexOf(k) === -1) state.containerKinds.push(k);
-    });
-    if (Array.isArray(data.sizes) && data.sizes.length > 0) state.sizes = data.sizes;
-    if (data.timer && typeof data.timer === 'object') {
-      state.timer.running = !!data.timer.running;
-      state.timer.startMs = (typeof data.timer.startMs === 'number') ? data.timer.startMs : null;
-      state.timer.elapsedMs = (typeof data.timer.elapsedMs === 'number') ? data.timer.elapsedMs : 0;
-      state.timer.frozenElapsedMs = (typeof data.timer.frozenElapsedMs === 'number') ? data.timer.frozenElapsedMs : 0;
-      state.timer.lastLapMs = (typeof data.timer.lastLapMs === 'number') ? data.timer.lastLapMs : 0;
-      // If timer was running when app was closed/killed, recompute elapsed from wall-clock.
-      if (state.timer.running && state.timer.startMs) {
-        state.timer.elapsedMs = Date.now() - state.timer.startMs;
-      }
-    }
-  } catch (e) { console.warn('load failed', e); }
+let audioCtx = null;
+function ac() {
+  if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (C) audioCtx = new C(); }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
 }
+function tone(f, d, t, g) {
+  const c = ac(); if (!c) return;
+  const o = c.createOscillator(), gn = c.createGain();
+  o.connect(gn); gn.connect(c.destination);
+  o.type = t || 'sine'; o.frequency.value = f;
+  const t0 = c.currentTime;
+  gn.gain.setValueAtTime(0, t0);
+  gn.gain.linearRampToValueAtTime(g || 0.18, t0 + 0.005);
+  gn.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  o.start(t0); o.stop(t0 + d + 0.02);
+}
+const SOUNDS = {
+  click:  { name: 'клік',    play: () => tone(820, 0.05, 'sine', 0.15) },
+  tick:   { name: 'тік',     play: () => tone(1500, 0.025, 'square', 0.08) },
+  bell:   { name: 'дзвоник', play: () => { tone(1320, 0.5, 'sine', 0.15); setTimeout(() => tone(1980, 0.4, 'sine', 0.07), 8); }},
+  pop:    { name: 'поп',     play: () => tone(180, 0.08, 'triangle', 0.25) },
+  drop:   { name: 'крапля',  play: () => { tone(900, 0.15, 'sine', 0.2); setTimeout(() => tone(1400, 0.1, 'sine', 0.1), 30); }},
+  wood:   { name: 'дерево',  play: () => tone(280, 0.08, 'triangle', 0.22) },
+  none:   { name: 'тиша',    play: () => {} }
+};
 
-function saveState() {
-  var data = {
-    lang: state.lang,
-    theme: state.theme,
-    manualSpeed: state.manualSpeed,
-    preparations: state.preparations,
-    session: state.session,
-    sessions: state.sessions,
-    varieties: state.varieties,
-    containerKinds: state.containerKinds,
-    sizes: state.sizes,
-    timer: state.timer
+const COLOURS = ['#d4a574','#c66161','#6cb085','#7c89c4','#c8a040','#c47b56','#95a386','#b87da6'];
+
+function id() { return Math.random().toString(36).slice(2, 10); }
+
+function defaultSchema() {
+  return {
+    metaFields: [
+      { id: 'loc',  label: 'Локація',      type: 'url',    icon: 'pin' },
+      { id: 'date', label: 'Дата посадки', type: 'date',   icon: 'calendar' },
+      { id: 'area', label: 'Площа',        type: 'number', unit: 'га', icon: 'area' },
+      { id: 'seed', label: 'Сорт насіння', type: 'text',   icon: 'seed' }
+    ],
+    counters: [
+      { id: 'trailer', name: 'Трейлери',  colour: COLOURS[0], sound: 'click', vibrate: true,
+        unitValue: 12100, unitLabel: 'кг', role: 'seed' },
+      { id: 'fert1',   name: 'Добриво 1', colour: COLOURS[2], sound: 'drop',  vibrate: true,
+        unitValue: null,  unitLabel: 'л',  role: 'other' },
+      { id: 'fert2',   name: 'Добриво 2', colour: COLOURS[3], sound: 'drop',  vibrate: true,
+        unitValue: null,  unitLabel: 'л',  role: 'other' },
+      { id: 'days',    name: 'Днів',       colour: COLOURS[4], sound: 'wood',  vibrate: true,
+        unitValue: null,  unitLabel: null, role: 'other' }
+    ]
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', state.theme);
-  var meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', state.theme === 'light' ? '#faf8f4' : '#0a0a0a');
-  var btn = document.getElementById('themeBtn');
-  if (btn) btn.textContent = state.theme === 'dark' ? '☀' : '☾';
+function newCard(schema, name) {
+  const counts = {}, corrections = {}, meta = {};
+  schema.counters.forEach(c => { counts[c.id] = 0; corrections[c.id] = 0; });
+  schema.metaFields.forEach(f => meta[f.id] = '');
+  return { id: id(), name: name || 'Нове поле', meta, counts, corrections, events: [] };
 }
 
-function tr(key) { return T[state.lang][key] || key; }
+function defaultState() {
+  const schema = defaultSchema();
+  const card = newCard(schema, 'Перше поле');
+  return { schema, cards: [card], activeCardId: card.id, logEnabled: false, areaUnit: 'га' };
+}
 
-function vibrate(p) { if (navigator.vibrate) navigator.vibrate(p); }
+/* MIGRATION */
+function migrate(s) {
+  if (!s.schema) return defaultState();
+  s.schema.counters.forEach(c => {
+    if (typeof c.unitValue === 'undefined') c.unitValue = null;
+    if (typeof c.unitLabel === 'undefined') c.unitLabel = null;
+    if (typeof c.role === 'undefined') c.role = 'other';
+  });
+  s.schema.metaFields.forEach(f => {
+    if (f.id === 'area' && f.type === 'text') {
+      f.type = 'number';
+      f.unit = f.unit || 'га';
+    }
+  });
+  s.cards.forEach(card => {
+    if (!card.corrections) card.corrections = {};
+    s.schema.counters.forEach(c => {
+      if (typeof card.corrections[c.id] === 'undefined') card.corrections[c.id] = 0;
+    });
+  });
+  if (typeof s.logEnabled === 'undefined') s.logEnabled = false;
+  if (typeof s.areaUnit === 'undefined') s.areaUnit = 'га';
+  return s;
+}
 
+let state = Store.get(KEY);
+state = (state && state.schema && state.cards) ? migrate(state) : defaultState();
+
+let view = 'list';
+function save() { Store.set(KEY, state); }
+function activeCard() { return state.cards.find(c => c.id === state.activeCardId); }
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+function esc(s) { return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+function fmtInt(n) {
+  if (!isFinite(n)) return '0';
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
 function fmtNum(n, decimals) {
-  if (decimals == null) decimals = 0;
-  if (!isFinite(n)) return '—';
-  var fixed = n.toFixed(decimals);
-  var parts = fixed.split('.');
-  var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  return parts.length > 1 ? intPart + ',' + parts[1] : intPart;
+  if (!isFinite(n)) return '0';
+  if (Math.abs(n) >= 100) return fmtInt(n);
+  const d = decimals == null ? 1 : decimals;
+  return (Math.round(n * Math.pow(10, d)) / Math.pow(10, d)).toString().replace('.', ',');
+}
+function parseNum(s) {
+  if (s == null || s === '') return 0;
+  const x = parseFloat(String(s).replace(',', '.'));
+  return isFinite(x) ? x : 0;
+}
+function showToast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 2200);
+}
+function isUrl(s) { return s && /^https?:\/\//i.test(s.trim()); }
+
+/* AREA UNIT — stored canonically in hectares; displayed in user's chosen unit */
+const HA_TO_AC = 2.4710538;
+function toDisplayArea(ha) { return state.areaUnit === 'ак' ? ha * HA_TO_AC : ha; }
+function fromInputArea(v)  { return state.areaUnit === 'ак' ? v / HA_TO_AC : v; }
+function areaLabel() { return state.areaUnit === 'ак' ? 'ак' : 'га'; }
+function areaLabelFull() { return state.areaUnit === 'ак' ? 'акри' : 'гектари'; }
+
+/* CUSTOM CONFIRM (replaces native confirm() which gets blocked on content:// URLs) */
+let _confirmCb = null;
+function confirmModal(message, onOk, opts) {
+  $('#confirm-message').textContent = message;
+  const ok = $('#confirm-ok');
+  ok.textContent = (opts && opts.okLabel) || 'Підтвердити';
+  ok.className = 'btn ' + ((opts && opts.primary) ? 'btn-primary' : 'btn-danger');
+  _confirmCb = onOk;
+  $('#overlay-confirm').classList.add('visible');
+}
+function closeConfirm() {
+  $('#overlay-confirm').classList.remove('visible');
+  _confirmCb = null;
+}
+$('#confirm-cancel').addEventListener('click', closeConfirm);
+$('#confirm-ok').addEventListener('click', () => {
+  const cb = _confirmCb;
+  closeConfirm();
+  if (cb) cb();
+});
+function fmtDate(s) {
+  if (!s) return '';
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return s;
+  const months = ['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+  return `${parseInt(m[3])} ${months[parseInt(m[2])-1]} ${m[1]}`;
 }
 
-function fmtMinutesAsHM(minutes) {
-  if (!isFinite(minutes) || minutes <= 0) return '—';
-  if (minutes < 60) return Math.round(minutes) + ' ' + tr('minShort');
-  var h = Math.floor(minutes / 60);
-  var m = Math.round(minutes - h * 60);
-  if (m === 0) return h + ' ' + tr('hourShort');
-  return h + ' ' + tr('hourShort') + ' ' + m + ' ' + tr('minShort');
+const ICONS = {
+  pin:      '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  area:     '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+  seed:     '<svg viewBox="0 0 24 24"><path d="M12 2c4 4 6 8 6 12a6 6 0 0 1-12 0c0-4 2-8 6-12z"/><path d="M12 8v10"/></svg>',
+  text:     '<svg viewBox="0 0 24 24"><line x1="6" y1="8" x2="18" y2="8"/><line x1="6" y1="13" x2="18" y2="13"/><line x1="6" y1="18" x2="14" y2="18"/></svg>'
+};
+
+/* ===== COMPUTATIONS ===== */
+function counterTotalUnits(counter, card) {
+  if (!counter.unitValue) return null;
+  const count = card.counts[counter.id] || 0;
+  const corr = card.corrections[counter.id] || 0;
+  return count * counter.unitValue + corr;
 }
 
-function fmtTime(ms) {
-  var totalSec = Math.floor(ms / 1000);
-  var h = Math.floor(totalSec / 3600);
-  var m = Math.floor((totalSec % 3600) / 60);
-  var s = totalSec % 60;
-  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+function varietyAnalytics() {
+  const seedCounters = state.schema.counters.filter(c => c.role === 'seed' && c.unitValue);
+  const groups = new Map();
+  let totalArea = 0, totalSeed = 0;
+
+  state.cards.forEach(card => {
+    const seedRaw = (card.meta.seed || '').trim();
+    const key = seedRaw.toLowerCase() || '__none__';
+    const display = seedRaw || 'Не вказано';
+    if (!groups.has(key)) groups.set(key, { name: display, area: 0, seedKg: 0, fields: 0 });
+    const g = groups.get(key);
+    g.fields++;
+    const area = parseNum(card.meta.area);
+    g.area += area;
+    totalArea += area;
+    seedCounters.forEach(cn => {
+      const t = counterTotalUnits(cn, card) || 0;
+      g.seedKg += t;
+      totalSeed += t;
+    });
+  });
+
+  const arr = Array.from(groups.values()).sort((a, b) => b.area - a.area);
+  return { groups: arr, totalArea, totalSeed, totalFields: state.cards.length, seedUnitLabel: seedCounters[0]?.unitLabel || 'кг' };
 }
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, function(c) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+function counterTotalsAcrossCards() {
+  return state.schema.counters.map(cn => {
+    let count = 0, units = 0;
+    state.cards.forEach(card => {
+      count += card.counts[cn.id] || 0;
+      const t = counterTotalUnits(cn, card);
+      if (t != null) units += t;
+    });
+    return { counter: cn, count, units, hasUnits: !!cn.unitValue };
   });
 }
 
-function streamDelta(stream) {
-  if (stream.after === '' || stream.after == null) return 0;
-  var after = Number(stream.after);
-  var before = Number(stream.before) || 0;
-  if (!isFinite(after)) return 0;
-  var delta = after - before;
-  return delta > 0 ? delta : 0;
-}
-
-function streamsTotal() {
-  var sum = 0;
-  for (var i = 0; i < state.streams.length; i++) sum += streamDelta(state.streams[i]);
-  return sum;
-}
-
-function calculatedSpeed() {
-  var total = streamsTotal();
-  var minutes = state.timer.frozenElapsedMs / 60000;
-  if (total <= 0 || minutes <= 0) return null;
-  return total / minutes;
-}
-
-function currentSpeed() {
-  var calc = calculatedSpeed();
-  if (calc !== null) return calc;
-  return state.manualSpeed || 0;
-}
-
-function renderI18n() {
-  document.documentElement.lang = state.lang;
-  document.title = tr('title');
-  var els = document.querySelectorAll('[data-i18n]');
-  for (var i = 0; i < els.length; i++) {
-    var key = els[i].getAttribute('data-i18n');
-    if (T[state.lang][key]) els[i].textContent = T[state.lang][key];
-  }
-  var langBtns = document.querySelectorAll('#langToggle button');
-  for (var j = 0; j < langBtns.length; j++) {
-    langBtns[j].classList.toggle('active', langBtns[j].getAttribute('data-lang') === state.lang);
-  }
-}
-
-function renderTimer() {
-  var display = document.getElementById('timerDisplay');
-  var lapEl = document.getElementById('lapDisplay');
-  var lapTimeEl = document.getElementById('lapTime');
-  var btn = document.getElementById('timerBtn');
-  var reset = document.getElementById('resetBtn');
-
-  display.textContent = fmtTime(state.timer.elapsedMs);
-
-  // Малий дисплей — показуємо тільки коли є зафіксований лап
-  if (state.timer.frozenElapsedMs > 0 && lapEl && lapTimeEl) {
-    lapEl.classList.remove('hidden');
-    lapTimeEl.textContent = fmtTime(state.timer.frozenElapsedMs);
-  } else if (lapEl) {
-    lapEl.classList.add('hidden');
-  }
-
-  if (state.timer.running) {
-    display.className = 'timer-display running';
-    btn.textContent = tr('lap');
-    btn.className = 'btn btn-stop';
-    reset.classList.remove('hidden');
+/* ===== HEADER ===== */
+function renderHeader() {
+  const back = $('#btn-back');
+  const spacer = $('#left-spacer');
+  const title = $('#header-title');
+  if (view === 'card') {
+    back.classList.remove('hidden');
+    spacer.style.display = 'none';
+    const c = activeCard();
+    title.textContent = c ? c.name : '';
+  } else if (view === 'analytics') {
+    back.classList.remove('hidden');
+    spacer.style.display = 'none';
+    title.textContent = 'Підсумок';
   } else {
-    display.className = state.timer.elapsedMs > 0 ? 'timer-display' : 'timer-display idle';
-    btn.textContent = tr('start');
-    btn.className = 'btn btn-primary';
-    reset.classList.toggle('hidden', state.timer.elapsedMs === 0 && state.timer.frozenElapsedMs === 0);
+    back.classList.add('hidden');
+    spacer.style.display = 'block';
+    title.innerHTML = 'грядка<span class="period">.</span>';
   }
 }
 
-function refreshAllStreamDeltas() {
-  var total = streamsTotal();
-  var blocks = document.querySelectorAll('#streamsList .stream-block');
-  var multi = state.streams.length > 1;
-  state.streams.forEach(function(stream, idx) {
-    if (!blocks[idx]) return;
-    var deltaEl = blocks[idx].querySelector('[data-role="delta"]');
-    if (!deltaEl) return;
-    var d = streamDelta(stream);
-    if (d > 0) {
-      var content = 'Δ <strong>' + fmtNum(d) + '</strong> ' + tr('kg');
-      if (multi && total > 0) {
-        content += ' · ' + fmtNum(d / total * 100, 0) + '%';
+/* ===== LIST SCREEN ===== */
+function renderList() {
+  const c = $('#cards-container');
+  c.innerHTML = '';
+  if (state.cards.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'Ще немає полів';
+    c.appendChild(empty);
+  }
+  state.cards.forEach(card => {
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    const seed = (card.meta.seed || '').trim();
+    const area = parseNum(card.meta.area);
+    let metaPart = [];
+    if (area > 0) metaPart.push(fmtNum(toDisplayArea(area)) + ' ' + areaLabel());
+    if (seed) metaPart.push(seed);
+    const metaStr = metaPart.length ? metaPart.join(' · ') : '';
+    let html = `<div class="card-row-head">
+      <div class="card-row-name">${esc(card.name)}</div>
+      ${metaStr ? `<div class="card-row-meta">${esc(metaStr)}</div>` : ''}
+      <div class="card-row-arrow">→</div>
+    </div><div class="mini-counters">`;
+    state.schema.counters.forEach(cn => {
+      const v = card.counts[cn.id] || 0;
+      const shortName = cn.name.split(' ')[0];
+      html += `<div class="mini-counter"><div class="mini-counter-name">${esc(shortName)}</div><div class="mini-counter-value" style="color:${cn.colour}">${v}</div></div>`;
+    });
+    html += '</div>';
+    row.innerHTML = html;
+    row.addEventListener('click', () => openCard(card.id));
+    c.appendChild(row);
+  });
+  const add = document.createElement('button');
+  add.className = 'add-card-btn';
+  add.textContent = '+ Нове поле';
+  add.addEventListener('click', addCard);
+  c.appendChild(add);
+}
+
+/* ===== CARD SCREEN ===== */
+function renderCard() {
+  const card = activeCard();
+  if (!card) return;
+  const mb = $('#meta-block');
+  mb.innerHTML = '';
+  state.schema.metaFields.forEach(f => {
+    const v = card.meta[f.id];
+    let valueHtml;
+    if (v === '' || v == null) valueHtml = `<div class="meta-value empty">—</div>`;
+    else if (f.type === 'url' && isUrl(v)) valueHtml = `<div class="meta-value"><a href="${esc(v)}" target="_blank" rel="noopener">відкрити</a></div>`;
+    else if (f.type === 'date') valueHtml = `<div class="meta-value">${esc(fmtDate(v))}</div>`;
+    else if (f.type === 'number') {
+      let n = parseNum(v);
+      let unit = f.unit;
+      if (f.id === 'area') { n = toDisplayArea(n); unit = areaLabel(); }
+      valueHtml = `<div class="meta-value">${fmtNum(n)}${unit ? `<span class="unit">${esc(unit)}</span>` : ''}</div>`;
+    }
+    else valueHtml = `<div class="meta-value">${esc(v)}</div>`;
+    const row = document.createElement('div');
+    row.className = 'meta-row';
+    row.innerHTML = `<div class="meta-icon">${ICONS[f.icon] || ICONS.text}</div><div class="meta-label">${esc(f.label)}</div>${valueHtml}`;
+    mb.appendChild(row);
+  });
+
+  const grid = $('#counters-grid');
+  grid.innerHTML = '';
+  state.schema.counters.forEach(cn => {
+    const v = card.counts[cn.id] || 0;
+    const corr = card.corrections[cn.id] || 0;
+    const tile = document.createElement('div');
+    tile.className = 'counter-tile';
+    tile.style.setProperty('--tile-color', cn.colour);
+    tile.dataset.counterId = cn.id;
+
+    let secondaryHtml = '';
+    if (cn.unitValue) {
+      const total = v * cn.unitValue + corr;
+      secondaryHtml = `<div class="counter-tile-sub">≈ ${fmtInt(total)} ${esc(cn.unitLabel || '')}</div>`;
+      if (corr !== 0) {
+        const sign = corr > 0 ? '+' : '';
+        secondaryHtml += `<div class="counter-tile-corr">кор: ${sign}${fmtInt(corr)}</div>`;
       }
-      deltaEl.innerHTML = content;
-    } else {
-      deltaEl.innerHTML = '';
+    } else if (cn.unitLabel) {
+      secondaryHtml = `<div class="counter-tile-hint">задати вагу одиниці</div>`;
     }
+
+    tile.innerHTML = `
+      <div class="glow"></div>
+      <button class="tile-menu-btn" aria-label="Меню матеріалу">⋮</button>
+      <div class="counter-tile-header">
+        <div class="counter-tile-dot"></div>
+        <div class="counter-tile-name">${esc(cn.name)}</div>
+      </div>
+      <div class="counter-tile-value">${v}</div>
+      ${secondaryHtml}
+    `;
+    tile.addEventListener('click', e => {
+      if (e.target.closest('.tile-menu-btn')) {
+        e.stopPropagation();
+        openTileMenu(cn.id);
+        return;
+      }
+      e.preventDefault();
+      tapCounter(cn.id);
+    });
+    grid.appendChild(tile);
   });
 }
 
-function renderStreams() {
-  var list = document.getElementById('streamsList');
-  list.innerHTML = '';
-
-  if (state.streams.length === 0) {
-    state.streams.push({ id: Date.now(), before: '', after: '' });
+const pulseTimers = {};
+function tapCounter(counterId) {
+  const card = activeCard(); if (!card) return;
+  const cn = state.schema.counters.find(c => c.id === counterId); if (!cn) return;
+  card.counts[counterId] = (card.counts[counterId] || 0) + 1;
+  if (state.logEnabled) {
+    card.events = card.events || [];
+    card.events.push({ counterId, ts: Date.now() });
   }
-
-  state.streams.forEach(function(stream, idx) {
-    var block = document.createElement('div');
-    block.className = 'stream-block';
-    var showRemove = state.streams.length > 1;
-
-    var html = '';
-    html += '<div class="stream-head">';
-    html += '<div class="stream-num">№' + (idx + 1) + '</div>';
-    html += '<div class="stream-delta-inline" data-role="delta"></div>';
-    if (showRemove) html += '<button class="remove-stream" data-role="remove">✕</button>';
-    html += '</div>';
-    html += '<div class="stream-pair">';
-    html += '<div class="stream-field">';
-    html += '<div class="stream-field-label">' + tr('before') + '</div>';
-    html += '<input type="number" inputmode="decimal" data-role="before" value="' + escapeHtml(String(stream.before)) + '" placeholder="0">';
-    html += '</div>';
-    html += '<div class="arrow">→</div>';
-    html += '<div class="stream-field">';
-    html += '<div class="stream-field-label">' + tr('after') + '</div>';
-    html += '<input type="number" inputmode="decimal" data-role="after" value="' + escapeHtml(String(stream.after)) + '" placeholder="0">';
-    html += '</div>';
-    html += '</div>';
-    html += '<div class="stream-presets" data-role="presets"></div>';
-    block.innerHTML = html;
-
-    var beforeInput = block.querySelector('[data-role="before"]');
-    var afterInput = block.querySelector('[data-role="after"]');
-    var presetsEl = block.querySelector('[data-role="presets"]');
-    var deltaEl = block.querySelector('[data-role="delta"]');
-
-    beforeInput.addEventListener('input', function(e) {
-      stream.before = e.target.value === '' ? '' : Number(e.target.value);
-      refreshAllStreamDeltas();
-      updateSpeedDisplay();
-      updateStreamTotal();
-    });
-    afterInput.addEventListener('input', function(e) {
-      stream.after = e.target.value === '' ? '' : Number(e.target.value);
-      refreshAllStreamDeltas();
-      updateSpeedDisplay();
-      updateStreamTotal();
-    });
-
-    if (showRemove) {
-      block.querySelector('[data-role="remove"]').addEventListener('click', function() {
-        state.streams = state.streams.filter(function(s) { return s.id !== stream.id; });
-        if (state.streams.length === 0) state.streams.push({ id: Date.now(), before: '', after: '' });
-        renderStreams();
-        updateSpeedDisplay();
-        updateStreamTotal();
-      });
+  save();
+  const tile = document.querySelector(`.counter-tile[data-counter-id="${counterId}"]`);
+  if (tile) {
+    tile.querySelector('.counter-tile-value').textContent = card.counts[counterId];
+    if (cn.unitValue) {
+      const total = card.counts[counterId] * cn.unitValue + (card.corrections[counterId] || 0);
+      const sub = tile.querySelector('.counter-tile-sub');
+      if (sub) sub.textContent = `≈ ${fmtInt(total)} ${cn.unitLabel || ''}`;
     }
+    tile.classList.add('pulsing');
+    clearTimeout(pulseTimers[counterId]);
+    pulseTimers[counterId] = setTimeout(() => tile.classList.remove('pulsing'), 200);
+  }
+  (SOUNDS[cn.sound] || SOUNDS.click).play();
+  if (cn.vibrate && 'vibrate' in navigator) navigator.vibrate(35);
+}
 
-    PRESETS.forEach(function(p) {
-      var b = document.createElement('button');
-      b.className = 'preset-btn';
-      b.textContent = p;
-      b.addEventListener('click', function() {
-        stream.after = p;
-        afterInput.value = p;
-        refreshAllStreamDeltas();
-        updateSpeedDisplay();
-        updateStreamTotal();
-      });
-      presetsEl.appendChild(b);
+/* ===== ANALYTICS SCREEN ===== */
+function renderAnalytics() {
+  const wrap = $('#analytics-wrap');
+  const a = varietyAnalytics();
+  const totals = counterTotalsAcrossCards();
+
+  const seedSection = document.createElement('div');
+  seedSection.className = 'ana-section';
+  let seedHtml = `<div class="ana-section-title">По сортах</div>`;
+  if (a.totalFields === 0) {
+    seedHtml += `<div style="color:var(--text-faint);font-style:italic">Немає полів</div>`;
+  } else {
+    a.groups.forEach(g => {
+      const areaPct = a.totalArea > 0 ? (g.area / a.totalArea * 100) : 0;
+      const seedPct = a.totalSeed > 0 ? (g.seedKg / a.totalSeed * 100) : 0;
+      seedHtml += `
+        <div class="ana-variety">
+          <div class="ana-variety-name">${esc(g.name)}<span class="fields-count">${g.fields} ${g.fields === 1 ? 'поле' : (g.fields < 5 ? 'поля' : 'полів')}</span></div>
+          <div class="ana-stat-row">
+            <span class="ana-stat-label">площа</span>
+            <span class="ana-stat-value">${fmtNum(toDisplayArea(g.area))} ${esc(areaLabel())}<span class="ana-stat-percent">${fmtNum(areaPct)}%</span></span>
+          </div>
+          <div class="ana-stat-row">
+            <span class="ana-stat-label">насіння</span>
+            <span class="ana-stat-value">${fmtInt(g.seedKg)} ${esc(a.seedUnitLabel)}<span class="ana-stat-percent">${fmtNum(seedPct)}%</span></span>
+          </div>
+        </div>`;
     });
+    seedHtml += `
+      <div class="ana-total">
+        <div class="ana-stat-row"><span class="ana-stat-label">Разом площа</span><span class="ana-stat-value">${fmtNum(toDisplayArea(a.totalArea))} ${esc(areaLabel())}</span></div>
+        <div class="ana-stat-row"><span class="ana-stat-label">Разом насіння</span><span class="ana-stat-value">${fmtInt(a.totalSeed)} ${esc(a.seedUnitLabel)}</span></div>
+        <div class="ana-stat-row"><span class="ana-stat-label">Полів усього</span><span class="ana-stat-value">${a.totalFields}</span></div>
+      </div>`;
+  }
+  seedSection.innerHTML = seedHtml;
+  wrap.innerHTML = '';
+  wrap.appendChild(seedSection);
 
-    list.appendChild(block);
+  const otherSection = document.createElement('div');
+  otherSection.className = 'ana-section';
+  let otherHtml = `<div class="ana-section-title">По всіх матеріалах</div>`;
+  totals.forEach(t => {
+    const cn = t.counter;
+    let valueStr;
+    if (t.hasUnits) valueStr = `${t.count} <span style="color:var(--text-faint)">шт</span> · ${fmtInt(t.units)} ${esc(cn.unitLabel || '')}`;
+    else valueStr = `${t.count}${cn.unitLabel ? ' ' + esc(cn.unitLabel) : ''}`;
+    otherHtml += `
+      <div class="ana-stat-row" style="padding:6px 0">
+        <span class="ana-stat-label" style="display:flex;align-items:center;gap:8px">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${cn.colour}"></span>
+          ${esc(cn.name)}
+        </span>
+        <span class="ana-stat-value">${valueStr}</span>
+      </div>`;
   });
-
-  refreshAllStreamDeltas();
-  document.getElementById('addStreamBtn').disabled = state.streams.length >= 3;
-  updateStreamTotal();
+  otherSection.innerHTML = otherHtml;
+  wrap.appendChild(otherSection);
 }
 
-function updateStreamTotal() {
-  document.getElementById('streamTotal').textContent = fmtNum(streamsTotal());
+/* ===== NAVIGATION ===== */
+function showView(v) {
+  view = v;
+  $('#screen-list').classList.toggle('hidden', v !== 'list');
+  $('#screen-card').classList.toggle('hidden', v !== 'card');
+  $('#screen-analytics').classList.toggle('hidden', v !== 'analytics');
+  renderHeader();
+}
+function openCard(cardId) {
+  state.activeCardId = cardId; save();
+  renderCard();
+  showView('card');
+}
+function backToList() {
+  renderList();
+  showView('list');
+}
+function openAnalytics() {
+  renderAnalytics();
+  showView('analytics');
 }
 
-function updateSpeedDisplay() {
-  var speed = currentSpeed();
-  var numEl = document.getElementById('speedNum');
-  var hourEl = document.getElementById('speedHour');
-  if (speed > 0) {
-    numEl.className = 'num';
-    numEl.textContent = fmtNum(speed, speed < 100 ? 1 : 0);
-    hourEl.textContent = fmtNum(speed * 60);
-  } else {
-    numEl.className = 'num zero';
-    numEl.textContent = '0';
-    hourEl.textContent = '0';
-  }
-  renderPreparations();
+function addCard() {
+  const card = newCard(state.schema, 'Нове поле ' + (state.cards.length + 1));
+  state.cards.push(card);
+  state.activeCardId = card.id;
+  save();
+  renderCard();
+  showView('card');
+  setTimeout(openMetaModal, 200);
 }
 
-function renderManualInput() {
-  var hidden = document.getElementById('manualSpeed');
-  var vis = document.getElementById('manualSpeedVis');
-  if (state.manualSpeed > 0) {
-    if (hidden) hidden.value = state.manualSpeed;
-    if (vis && document.activeElement !== vis) vis.value = state.manualSpeed;
-  } else {
-    if (vis && document.activeElement !== vis) vis.value = '';
-  }
+/* ===== META MODAL ===== */
+function openMetaModal() {
+  const card = activeCard(); if (!card) return;
+  $('#meta-name').value = card.name || '';
+  const wrap = $('#meta-fields');
+  wrap.innerHTML = '';
+  state.schema.metaFields.forEach(f => {
+    const v = card.meta[f.id] || '';
+    const g = document.createElement('div');
+    g.className = 'form-group';
+    let inputHtml;
+    if (f.type === 'date') inputHtml = `<input type="date" class="form-input" data-field="${f.id}" value="${esc(v)}">`;
+    else if (f.type === 'url') inputHtml = `<input type="url" class="form-input" data-field="${f.id}" value="${esc(v)}" placeholder="https://...">`;
+    else if (f.type === 'number') {
+      let displayVal = v;
+      let labelUnit = f.unit;
+      if (f.id === 'area') {
+        const n = parseNum(v);
+        displayVal = n ? (Math.round(toDisplayArea(n) * 1000) / 1000).toString() : '';
+        labelUnit = areaLabel();
+      }
+      const unit = labelUnit ? ` <span style="color:var(--text-faint)">(${esc(labelUnit)})</span>` : '';
+      inputHtml = `<input type="number" step="any" inputmode="decimal" class="form-input" data-field="${f.id}" value="${esc(displayVal)}" placeholder="0">`;
+      g.innerHTML = `<label class="form-label">${esc(f.label)}${unit}</label>${inputHtml}`;
+      wrap.appendChild(g);
+      return;
+    }
+    else inputHtml = `<input type="text" class="form-input" data-field="${f.id}" value="${esc(v)}">`;
+    g.innerHTML = `<label class="form-label">${esc(f.label)}</label>${inputHtml}`;
+    wrap.appendChild(g);
+  });
+  showOverlay('overlay-meta');
 }
 
-function renderPreparations() {
-  var list = document.getElementById('prepList');
-  // Якщо кнопка видалення вже "зведена" — не перестворювати картки,
-  // щоб не скидати стан підтвердження.
-  if (list.querySelector('.prep-action-btn.armed')) {
-    // Тільки оновлюємо числа в існуючих картках
-    var speed = currentSpeed();
-    list.querySelectorAll('.prep-card').forEach(function(card, idx) {
-      var prep = state.preparations[idx];
-      if (!prep) return;
-      var mlMin = (speed > 0 && prep.active) ? speed * prep.norm / 1000 : null;
-      var mlEl = card.querySelector('.ml-min');
-      if (mlEl) mlEl.textContent = mlMin !== null ? fmtNum(mlMin, mlMin < 100 ? 1 : 0) : '—';
+$('#btn-meta-save').addEventListener('click', () => {
+  const card = activeCard(); if (!card) return;
+  card.name = $('#meta-name').value.trim() || 'Без назви';
+  $$('#meta-fields [data-field]').forEach(inp => {
+    let val = inp.value.trim();
+    if (inp.dataset.field === 'area' && val !== '') {
+      const n = parseNum(val);
+      val = String(fromInputArea(n));
+    }
+    card.meta[inp.dataset.field] = val;
+  });
+  save();
+  closeOverlays();
+  renderCard();
+  renderHeader();
+});
+
+/* ===== HEADER MENU ===== */
+function openMenu() {
+  const body = $('#menu-body');
+  body.innerHTML = '';
+  $('#menu-title').textContent = view === 'card' ? (activeCard()?.name || 'Меню') : (view === 'analytics' ? 'Підсумок' : 'Меню');
+
+  if (view === 'card') {
+    body.innerHTML = `
+      <div class="modal-section-title">Це поле</div>
+      <div class="menu-item" data-act="rename"><span class="item-name">Перейменувати поле</span><span class="item-arrow">›</span></div>
+      <div class="menu-item" data-act="reset-card"><span class="item-name" style="color:var(--danger)">Обнулити матеріали на цьому полі</span><span class="item-arrow">›</span></div>
+      <div class="menu-item" data-act="delete-card"><span class="item-name" style="color:var(--danger)">Видалити поле</span><span class="item-arrow">›</span></div>
+      <div class="modal-section-title">Матеріали (всі поля)</div>
+    `;
+    state.schema.counters.forEach(cn => {
+      const row = document.createElement('div');
+      row.className = 'menu-item';
+      row.dataset.act = 'edit-counter';
+      row.dataset.counterId = cn.id;
+      row.innerHTML = `<div class="item-color" style="background:${cn.colour}"></div><div class="item-name">${esc(cn.name)}</div><div class="item-arrow">›</div>`;
+      body.appendChild(row);
     });
+    const addRow = document.createElement('div');
+    addRow.className = 'menu-item';
+    addRow.dataset.act = 'add-counter';
+    addRow.innerHTML = `<span class="item-name" style="color:var(--text-dim);font-style:italic;font-family:Fraunces,serif">+ Новий матеріал</span>`;
+    body.appendChild(addRow);
+  }
+
+  const sec = document.createElement('div');
+  sec.innerHTML = `
+    <div class="modal-section-title">Налаштування</div>
+    <div style="padding:14px 22px 4px">
+      <div style="font-size:0.92rem;color:var(--text);margin-bottom:8px">Одиниця площі</div>
+      <div class="sounds">
+        <div class="sound-chip ${state.areaUnit === 'га' ? 'selected' : ''}" data-act="set-area-unit" data-unit="га">гектари</div>
+        <div class="sound-chip ${state.areaUnit === 'ак' ? 'selected' : ''}" data-act="set-area-unit" data-unit="ак">акри</div>
+      </div>
+      <div style="font-size:0.7rem;color:var(--text-faint);margin-top:8px;font-family:'JetBrains Mono',monospace">1 га ≈ 2.471 ак · значення зберігаються в гектарах</div>
+    </div>
+    <div class="modal-section-title">Підсумок та експорт</div>
+    <div class="menu-item" data-act="open-analytics"><span class="item-name">Підсумок по сортах і полях</span><span class="item-arrow">›</span></div>
+    <div class="menu-item" data-act="export-fields"><span class="item-name">Експорт по полях (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="menu-item" data-act="export-varieties"><span class="item-name">Експорт по сортах (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="modal-section-title">Журнал часу</div>
+    <div class="toggle-row" style="border-top:none;padding-top:8px">
+      <div>
+        <div class="toggle-label">Записувати час кожного тапу</div>
+        <div class="toggle-sub">потрібно для журналу подій</div>
+      </div>
+      <div class="toggle ${state.logEnabled ? 'on' : ''}" id="log-toggle"></div>
+    </div>
+    <div class="menu-item" data-act="export-log"><span class="item-name">Експорт журналу подій (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="modal-section-title">Дані</div>
+    <div class="menu-item" data-act="reset-all"><span class="item-name" style="color:var(--danger)">Очистити всі дані</span><span class="item-arrow">›</span></div>
+  `;
+  body.appendChild(sec);
+
+  showOverlay('overlay-menu');
+}
+
+$('#overlay-menu').addEventListener('click', e => {
+  if (e.target.id === 'log-toggle') {
+    state.logEnabled = !state.logEnabled;
+    save();
+    e.target.classList.toggle('on', state.logEnabled);
+    showToast(state.logEnabled ? 'Час кожного тапу буде записано' : 'Запис часу вимкнено');
     return;
   }
-  list.innerHTML = '';
-  var speed = currentSpeed();
+  const target = e.target.closest('[data-act]');
+  if (!target) return;
+  handleMenuAction(target.dataset.act, target);
+});
 
-  state.preparations.forEach(function(prep) {
-    var card = document.createElement('div');
-    card.className = 'prep-card' + (prep.active ? ' active' : '');
-
-    if (state.editingPrepId === prep.id) {
-      var editHtml = '';
-      editHtml += '<div class="prep-edit">';
-      editHtml += '<div class="field-row">';
-      editHtml += '<label>' + tr('name') + '</label>';
-      editHtml += '<input type="text" data-role="editName" value="' + escapeHtml(prep.name) + '" placeholder="' + escapeHtml(tr('namePlaceholder')) + '">';
-      editHtml += '</div>';
-      editHtml += '<div class="field-row">';
-      editHtml += '<label>' + tr('norm') + '</label>';
-      editHtml += '<input type="number" inputmode="decimal" data-role="editNorm" value="' + prep.norm + '">';
-      editHtml += '<span class="unit-tag">' + tr('mlPerTon') + '</span>';
-      editHtml += '</div>';
-      editHtml += '<div class="field-row">';
-      editHtml += '<label>' + tr('canVolume') + '</label>';
-      editHtml += '<input type="number" inputmode="decimal" data-role="editCan" value="' + (prep.canVolume || 5) + '">';
-      editHtml += '<span class="unit-tag">' + tr('liter') + '</span>';
-      editHtml += '</div>';
-      editHtml += '<div class="edit-actions">';
-      editHtml += '<button class="btn btn-secondary" data-action="cancel">' + tr('cancelBtn') + '</button>';
-      editHtml += '<button class="btn btn-primary" data-action="save">' + tr('saveBtn') + '</button>';
-      editHtml += '</div>';
-      editHtml += '</div>';
-      card.innerHTML = editHtml;
-
-      card.querySelector('[data-action="cancel"]').addEventListener('click', function() {
-        if (!prep.name) {
-          state.preparations = state.preparations.filter(function(p) { return p.id !== prep.id; });
-        }
-        state.editingPrepId = null;
-        renderPreparations();
+function handleMenuAction(act, target) {
+  switch (act) {
+    case 'rename':
+      closeOverlays();
+      setTimeout(openMetaModal, 200);
+      break;
+    case 'reset-card': {
+      const c = activeCard(); if (!c) return;
+      confirmModal('Обнулити всі матеріали на цьому полі? Корекції також скинуться.', () => {
+        state.schema.counters.forEach(cn => { c.counts[cn.id] = 0; c.corrections[cn.id] = 0; });
+        c.events = [];
+        save(); renderCard(); closeOverlays();
+        showToast('Матеріали обнулено');
       });
-      card.querySelector('[data-action="save"]').addEventListener('click', function() {
-        var nameEl = card.querySelector('[data-role="editName"]');
-        var normEl = card.querySelector('[data-role="editNorm"]');
-        var canEl = card.querySelector('[data-role="editCan"]');
-        var newName = nameEl.value.trim();
-        var newNorm = Number(normEl.value);
-        var newCan = Number(canEl.value);
-        if (!newName) { nameEl.focus(); return; }
-        if (!isFinite(newNorm) || newNorm <= 0) { normEl.focus(); return; }
-        if (!isFinite(newCan) || newCan <= 0) { canEl.focus(); return; }
-        prep.name = newName;
-        prep.norm = newNorm;
-        prep.canVolume = newCan;
-        state.editingPrepId = null;
-        saveState();
-        renderPreparations();
-      });
-    } else {
-      var mlMin = (speed > 0 && prep.active) ? speed * prep.norm / 1000 : null;
-      var dimmed = mlMin === null ? 'dimmed' : '';
-      var mlText = mlMin !== null ? fmtNum(mlMin, mlMin < 100 ? 1 : 0) : '—';
-
-      var dispHtml = '';
-      dispHtml += '<div class="prep-head">';
-      dispHtml += '<div class="prep-checkbox ' + (prep.active ? 'checked' : '') + '" data-action="toggle"></div>';
-      dispHtml += '<div class="prep-name">' + escapeHtml(prep.name) + '<span style="font-family:var(--mono);font-size:12px;font-weight:400;color:var(--text-dim);margin-left:8px;letter-spacing:0;">' + fmtNum(prep.norm, 0) + ' ' + tr('mlPerTon') + '</span></div>';
-      dispHtml += '<div class="prep-actions">';
-      dispHtml += '<button class="prep-action-btn" data-action="edit">✎</button>';
-      dispHtml += '<button class="prep-action-btn del" data-action="delete">✕</button>';
-      dispHtml += '</div>';
-      dispHtml += '</div>';
-      var minPerLiter = (mlMin && mlMin > 0) ? 1000 / mlMin : null;
-      var rtText = minPerLiter !== null ? fmtMinutesAsHM(minPerLiter) : '—';
-      var rtDimmed = minPerLiter === null ? 'dimmed' : '';
-      dispHtml += '<div class="prep-output">';
-      dispHtml += '<div class="po-main">';
-      dispHtml += '<span class="arrow">→</span>';
-      dispHtml += '<span class="ml-min ' + dimmed + '">' + mlText + '</span>';
-      dispHtml += '<span class="ml-unit">' + tr('mlPerMin') + '</span>';
-      dispHtml += '</div>';
-      dispHtml += '<div class="po-runtime ' + rtDimmed + '">';
-      dispHtml += '<span class="rt-label">' + tr('perLiterLabel') + '</span>';
-      dispHtml += '<span>' + rtText + '</span>';
-      dispHtml += '</div>';
-      dispHtml += '</div>';
-      dispHtml += '<div class="prep-reverse">';
-      dispHtml += '<input type="number" inputmode="decimal" placeholder="0" data-role="revMl" data-prep-id="' + prep.id + '">';
-      dispHtml += '<span class="rev-unit">' + tr('mlPerMin') + '</span>';
-      dispHtml += '<span class="rev-arrow">→</span>';
-      dispHtml += '<span class="rev-result" data-role="revResult">—</span>';
-      dispHtml += '<span class="rev-result-unit">' + tr('kgPerHour') + '</span>';
-      dispHtml += '</div>';
-      card.innerHTML = dispHtml;
-
-      card.querySelector('[data-role="revMl"]').addEventListener('input', function(e) {
-        var ml = Number(e.target.value) || 0;
-        var resultEl = card.querySelector('[data-role="revResult"]');
-        if (ml > 0 && prep.norm > 0) {
-          var kgPerMin = ml * 1000 / prep.norm;
-          var kgPerHour = kgPerMin * 60;
-          resultEl.textContent = fmtNum(kgPerHour, 0);
-        } else {
-          resultEl.textContent = '—';
-        }
-      });
-
-      card.querySelector('[data-action="toggle"]').addEventListener('click', function() {
-        prep.active = !prep.active;
-        saveState();
-        renderPreparations();
-      });
-      card.querySelector('[data-action="edit"]').addEventListener('click', function() {
-        state.editingPrepId = prep.id;
-        renderPreparations();
-      });
-      armConfirmButton(card.querySelector('[data-action="delete"]'), function() {
-        state.preparations = state.preparations.filter(function(p) { return p.id !== prep.id; });
-        saveState();
-        renderPreparations();
-      });
+      break;
     }
+    case 'delete-card': {
+      const c = activeCard(); if (!c) return;
+      if (state.cards.length <= 1) {
+        showToast('Не можна видалити єдине поле. Спочатку створи інше.');
+        return;
+      }
+      confirmModal(`Видалити поле «${c.name}»?`, () => {
+        state.cards = state.cards.filter(x => x.id !== c.id);
+        state.activeCardId = state.cards[0]?.id;
+        save();
+        closeOverlays();
+        backToList();
+      });
+      break;
+    }
+    case 'edit-counter':
+      openCounterModal(target.dataset.counterId);
+      break;
+    case 'add-counter':
+      openCounterModal(null);
+      break;
+    case 'open-analytics':
+      closeOverlays();
+      setTimeout(openAnalytics, 200);
+      break;
+    case 'export-fields': exportFieldsCSV(); break;
+    case 'export-varieties': exportVarietiesCSV(); break;
+    case 'export-log': exportLogCSV(); break;
+    case 'set-area-unit':
+      state.areaUnit = target.dataset.unit;
+      save();
+      $$('[data-act="set-area-unit"]').forEach(c => c.classList.toggle('selected', c.dataset.unit === state.areaUnit));
+      showToast('Одиниця площі: ' + areaLabelFull());
+      break;
+    case 'reset-all':
+      confirmModal('Видалити всі поля та налаштування назавжди?', () => {
+        state = defaultState();
+        save();
+        closeOverlays();
+        backToList();
+      });
+      break;
+  }
+}
 
-    list.appendChild(card);
+/* ===== COUNTER SETTINGS MODAL ===== */
+let editingCounterId = null;
+function openCounterModal(counterId) {
+  editingCounterId = counterId;
+  const cn = counterId ? state.schema.counters.find(c => c.id === counterId) : null;
+  $('#counter-name').value = cn ? cn.name : '';
+  $('#counter-unit-label').value = cn && cn.unitLabel ? cn.unitLabel : '';
+  $('#counter-unit-value').value = cn && cn.unitValue ? cn.unitValue : '';
+  $('#btn-counter-delete').style.display = (cn && state.schema.counters.length > 1) ? '' : 'none';
+
+  const sw = $('#counter-swatches');
+  sw.innerHTML = '';
+  const selectedColour = cn ? cn.colour : COLOURS[state.schema.counters.length % COLOURS.length];
+  COLOURS.forEach(col => {
+    const el = document.createElement('div');
+    el.className = 'swatch' + (col === selectedColour ? ' selected' : '');
+    el.style.background = col;
+    el.dataset.colour = col;
+    el.addEventListener('click', () => {
+      $$('#counter-swatches .swatch').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+    sw.appendChild(el);
   });
-}
 
-// Wake Lock: keep screen on while stopwatch is running.
-var wakeLock = null;
-function acquireWakeLock() {
-  if (!('wakeLock' in navigator)) return;
-  if (document.visibilityState !== 'visible') return;
-  navigator.wakeLock.request('screen').then(function(lock) {
-    wakeLock = lock;
-    lock.addEventListener('release', function() { wakeLock = null; });
-  }).catch(function(e) { /* ignore — not critical */ });
+  const ss = $('#counter-sounds');
+  ss.innerHTML = '';
+  const selectedSound = cn ? cn.sound : 'click';
+  Object.keys(SOUNDS).forEach(key => {
+    const chip = document.createElement('div');
+    chip.className = 'sound-chip' + (key === selectedSound ? ' selected' : '');
+    chip.textContent = SOUNDS[key].name;
+    chip.dataset.sound = key;
+    chip.addEventListener('click', () => {
+      $$('#counter-sounds .sound-chip').forEach(s => s.classList.remove('selected'));
+      chip.classList.add('selected');
+      SOUNDS[key].play();
+    });
+    ss.appendChild(chip);
+  });
+
+  const v = $('#counter-vibrate');
+  const vOn = cn ? cn.vibrate : true;
+  v.classList.toggle('on', vOn); v.dataset.on = vOn ? '1' : '0';
+
+  const r = $('#counter-role-seed');
+  const rOn = cn ? cn.role === 'seed' : false;
+  r.classList.toggle('on', rOn); r.dataset.on = rOn ? '1' : '0';
+
+  closeOverlays();
+  setTimeout(() => showOverlay('overlay-counter'), 100);
 }
-function releaseWakeLock() {
-  if (wakeLock) {
-    try { wakeLock.release(); } catch (e) {}
-    wakeLock = null;
+$('#counter-vibrate').addEventListener('click', () => {
+  const v = $('#counter-vibrate');
+  const on = v.dataset.on !== '1';
+  v.dataset.on = on ? '1' : '0';
+  v.classList.toggle('on', on);
+  if (on && 'vibrate' in navigator) navigator.vibrate(35);
+});
+$('#counter-role-seed').addEventListener('click', () => {
+  const r = $('#counter-role-seed');
+  const on = r.dataset.on !== '1';
+  r.dataset.on = on ? '1' : '0';
+  r.classList.toggle('on', on);
+});
+$('#btn-counter-save').addEventListener('click', () => {
+  const name = $('#counter-name').value.trim() || 'Матеріал';
+  const colour = $('#counter-swatches .swatch.selected')?.dataset.colour || COLOURS[0];
+  const sound = $('#counter-sounds .sound-chip.selected')?.dataset.sound || 'click';
+  const vibrate = $('#counter-vibrate').dataset.on === '1';
+  const role = $('#counter-role-seed').dataset.on === '1' ? 'seed' : 'other';
+  const unitLabel = $('#counter-unit-label').value.trim() || null;
+  const unitValueRaw = $('#counter-unit-value').value.trim();
+  const unitValue = unitValueRaw === '' ? null : parseNum(unitValueRaw);
+
+  if (editingCounterId) {
+    const cn = state.schema.counters.find(c => c.id === editingCounterId);
+    if (cn) Object.assign(cn, { name, colour, sound, vibrate, role, unitLabel, unitValue });
+  } else {
+    const newCn = { id: id(), name, colour, sound, vibrate, role, unitLabel, unitValue };
+    state.schema.counters.push(newCn);
+    state.cards.forEach(c => { c.counts[newCn.id] = 0; c.corrections[newCn.id] = 0; });
+  }
+  save();
+  closeOverlays();
+  if (view === 'card') renderCard();
+  if (view === 'analytics') renderAnalytics();
+});
+$('#btn-counter-delete').addEventListener('click', () => {
+  if (!editingCounterId) return;
+  if (state.schema.counters.length <= 1) return;
+  confirmModal('Видалити цей матеріал з усіх полів? Дані буде втрачено.', () => {
+    state.schema.counters = state.schema.counters.filter(c => c.id !== editingCounterId);
+    state.cards.forEach(c => {
+      delete c.counts[editingCounterId];
+      delete c.corrections[editingCounterId];
+      c.events = (c.events || []).filter(e => e.counterId !== editingCounterId);
+    });
+    save();
+    closeOverlays();
+    if (view === 'card') renderCard();
+  });
+});
+
+/* ===== TILE MENU MODAL (per-card per-counter) ===== */
+let tileMenuCounterId = null;
+function openTileMenu(counterId) {
+  const card = activeCard(); if (!card) return;
+  const cn = state.schema.counters.find(c => c.id === counterId); if (!cn) return;
+  tileMenuCounterId = counterId;
+
+  $('#tile-title').textContent = cn.name;
+  $('#tile-count').value = card.counts[counterId] || 0;
+  const corrInput = $('#tile-correction');
+  corrInput.value = card.corrections[counterId] || 0;
+  $('#tile-correction-unit').textContent = cn.unitLabel ? `(${cn.unitLabel})` : '';
+  $('#tile-correction-group').style.display = cn.unitValue ? '' : 'none';
+
+  updateTilePreview();
+  showOverlay('overlay-tile');
+}
+function updateTilePreview() {
+  const cn = state.schema.counters.find(c => c.id === tileMenuCounterId);
+  if (!cn) return;
+  const count = parseInt($('#tile-count').value, 10) || 0;
+  const corr = parseNum($('#tile-correction').value);
+  const preview = $('#tile-preview');
+  if (cn.unitValue) {
+    const total = count * cn.unitValue + corr;
+    preview.innerHTML = `${count} × ${fmtInt(cn.unitValue)}${corr !== 0 ? ` ${corr > 0 ? '+' : '−'} ${fmtInt(Math.abs(corr))}` : ''} = <b>${fmtInt(total)} ${esc(cn.unitLabel || '')}</b>`;
+    preview.style.display = '';
+  } else {
+    preview.innerHTML = `Кількість: <b>${count}</b>`;
+    preview.style.display = '';
   }
 }
+$('#tile-count').addEventListener('input', updateTilePreview);
+$('#tile-correction').addEventListener('input', updateTilePreview);
+$('#tile-minus').addEventListener('click', () => {
+  const inp = $('#tile-count');
+  inp.value = Math.max(0, (parseInt(inp.value, 10) || 0) - 1);
+  updateTilePreview();
+});
+$('#tile-plus').addEventListener('click', () => {
+  const inp = $('#tile-count');
+  inp.value = (parseInt(inp.value, 10) || 0) + 1;
+  updateTilePreview();
+});
+$('#btn-tile-save').addEventListener('click', () => {
+  const card = activeCard(); if (!card) return;
+  const cn = state.schema.counters.find(c => c.id === tileMenuCounterId); if (!cn) return;
+  const count = Math.max(0, parseInt($('#tile-count').value, 10) || 0);
+  const corr = parseNum($('#tile-correction').value);
+  card.counts[tileMenuCounterId] = count;
+  card.corrections[tileMenuCounterId] = corr;
+  save();
+  closeOverlays();
+  renderCard();
+});
+$('#btn-tile-reset').addEventListener('click', () => {
+  confirmModal('Скинути цей матеріал на 0 і обнулити корекцію?', () => {
+    const card = activeCard(); if (!card) return;
+    card.counts[tileMenuCounterId] = 0;
+    card.corrections[tileMenuCounterId] = 0;
+    save();
+    closeOverlays();
+    renderCard();
+    showToast('Матеріал скинуто');
+  });
+});
+$('#btn-tile-settings').addEventListener('click', () => {
+  const cid = tileMenuCounterId;
+  closeOverlays();
+  setTimeout(() => openCounterModal(cid), 150);
+});
 
-function startTimer() {
-  state.timer.elapsedMs = 0;
-  state.timer.lastLapMs = 0;
-  state.timer.frozenElapsedMs = 0;
-  state.timer.running = true;
-  state.timer.startMs = Date.now();
-  state.streams.forEach(function(s) { s.after = ''; });
-  vibrate(50);
-  clearInterval(timerInterval);
-  timerInterval = setInterval(tickTimer, 100);
-  acquireWakeLock();
-  saveState();
-  renderTimer();
-  renderStreams();
-  updateSpeedDisplay();
+/* ===== CSV ===== */
+function csvEscape(v) {
+  const s = String(v == null ? '' : v);
+  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function downloadCSV(filename, rows) {
+  const csv = '\ufeff' + rows.map(r => r.map(csvEscape).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+}
+function tsFormat(ms) {
+  const d = new Date(ms);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+function stamp() { return tsFormat(Date.now()).replace(/[^0-9]/g, '').slice(0, 12); }
+
+function exportFieldsCSV() {
+  const headers = ['Назва'];
+  state.schema.metaFields.forEach(f => {
+    let unit = f.unit;
+    if (f.id === 'area') unit = areaLabel();
+    const lbl = unit ? `${f.label} (${unit})` : f.label;
+    headers.push(lbl);
+  });
+  state.schema.counters.forEach(c => {
+    headers.push(`${c.name} (шт)`);
+    if (c.unitValue) {
+      headers.push(`${c.name} (${c.unitLabel || ''})`);
+      headers.push(`${c.name} корекція`);
+    }
+  });
+  const rows = [headers];
+  state.cards.forEach(card => {
+    const row = [card.name];
+    state.schema.metaFields.forEach(f => {
+      let val = card.meta[f.id] || '';
+      if (f.id === 'area' && val !== '') val = Math.round(toDisplayArea(parseNum(val)) * 1000) / 1000;
+      row.push(val);
+    });
+    state.schema.counters.forEach(c => {
+      row.push(card.counts[c.id] || 0);
+      if (c.unitValue) {
+        row.push(counterTotalUnits(c, card) || 0);
+        row.push(card.corrections[c.id] || 0);
+      }
+    });
+    rows.push(row);
+  });
+  downloadCSV(`polya-${stamp()}.csv`, rows);
+  closeOverlays();
+  showToast('Збережено в Downloads');
 }
 
-function lapTimer() {
-  if (state.timer.elapsedMs < 500) return; // захист від випадкового тапу
-  // Split time = повний час від старту до цього моменту.
-  state.timer.frozenElapsedMs = state.timer.elapsedMs;
-  vibrate([40, 40, 80]);
-  saveState();
-  renderTimer();
-  updateSpeedDisplay();
+function exportVarietiesCSV() {
+  const a = varietyAnalytics();
+  const aLbl = areaLabel();
+  const headers = ['Сорт', 'Полів', `Площа (${aLbl})`, '% площі', `Насіння (${a.seedUnitLabel})`, '% насіння'];
+  const rows = [headers];
+  a.groups.forEach(g => {
+    const areaPct = a.totalArea > 0 ? (g.area / a.totalArea * 100) : 0;
+    const seedPct = a.totalSeed > 0 ? (g.seedKg / a.totalSeed * 100) : 0;
+    rows.push([
+      g.name, g.fields,
+      Math.round(toDisplayArea(g.area) * 100) / 100,
+      Math.round(areaPct * 10) / 10,
+      Math.round(g.seedKg),
+      Math.round(seedPct * 10) / 10
+    ]);
+  });
+  rows.push(['Разом', a.totalFields, Math.round(toDisplayArea(a.totalArea) * 100) / 100, 100, Math.round(a.totalSeed), 100]);
+  downloadCSV(`sorty-${stamp()}.csv`, rows);
+  closeOverlays();
+  showToast('Збережено в Downloads');
 }
 
-function resetTimer() {
-  state.timer = { running: false, startMs: null, elapsedMs: 0, frozenElapsedMs: 0, lastLapMs: 0 };
-  state.streams = [];
-  clearInterval(timerInterval);
-  releaseWakeLock();
-  saveState();
-  renderTimer();
-  renderStreams();
-  updateSpeedDisplay();
-}
-
-// Throttle saving the running timer to localStorage (once per ~3 s).
-var lastTimerSaveMs = 0;
-function tickTimer() {
-  state.timer.elapsedMs = Date.now() - state.timer.startMs;
-  document.getElementById('timerDisplay').textContent = fmtTime(state.timer.elapsedMs);
-  var now = Date.now();
-  if (now - lastTimerSaveMs > 3000) {
-    lastTimerSaveMs = now;
-    saveState();
-  }
-}
-
-// ── SESSION ─────────────────────────────────────────────────────────────────
-
-var sessionTicker = null;
-var SESSION_PRESETS = [1000, 1100, 1250];
-var PERMANENT_KINDS = ['Bag', 'Box'];
-
-function uid() {
-  return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
-}
-
-function fmtElapsedHMS(ms) {
-  if (!isFinite(ms) || ms < 0) ms = 0;
-  var totalSec = Math.floor(ms / 1000);
-  var h = Math.floor(totalSec / 3600);
-  var m = Math.floor((totalSec - h * 3600) / 60);
-  var s = totalSec - h * 3600 - m * 60;
-  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-}
-
-function fmtClock(ts) {
-  var d = new Date(ts);
-  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-}
-
-function fmtDate(ts) {
-  var d = new Date(ts);
-  return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
-}
-
-function nextSessionNumber() {
-  var max = 0;
-  state.sessions.forEach(function(s) { if (s.number > max) max = s.number; });
-  if (state.session && state.session.number > max) max = state.session.number;
-  return max + 1;
-}
-
-function createDraftSession() {
-  state.session = {
-    id: uid(),
-    number: nextSessionNumber(),
-    variety: '',
-    containerTypes: [],
-    activePrepIds: state.preparations.filter(function(p) { return p.active; }).map(function(p) { return p.id; }),
-    canVolumes: {},
-    startedAt: null,
-    endedAt: null,
-    paused: false,
-    pauseStartedAt: null,
-    totalPausedMs: 0,
-    events: []
-  };
-  saveState();
-}
-
-function startSession() {
-  if (!state.session) return;
-  if (!state.session.containerTypes || state.session.containerTypes.length === 0) {
-    alert(tr('needContainer'));
+function exportLogCSV() {
+  const rows = [['Поле', 'Матеріал', 'Час']];
+  let total = 0;
+  state.cards.forEach(card => {
+    (card.events || []).forEach(ev => {
+      const cn = state.schema.counters.find(c => c.id === ev.counterId);
+      rows.push([card.name, cn ? cn.name : ev.counterId, tsFormat(ev.ts)]);
+      total++;
+    });
+  });
+  if (total === 0) {
+    closeOverlays();
+    showToast('Журнал порожній. Увімкни «Записувати час».');
     return;
   }
-  state.session.canVolumes = {};
-  state.session.activePrepIds.forEach(function(pid) {
-    var p = findPrep(pid);
-    if (p) state.session.canVolumes[pid] = p.canVolume || 5;
+  downloadCSV(`zhurnal-${stamp()}.csv`, rows);
+  closeOverlays();
+  showToast(`Збережено (${total} подій)`);
+}
+
+/* ===== OVERLAYS ===== */
+function showOverlay(id) { $('#' + id).classList.add('visible'); }
+function closeOverlays() {
+  $$('.overlay').forEach(o => {
+    if (o.id !== 'overlay-confirm') o.classList.remove('visible');
   });
-  var v = (state.session.variety || '').trim();
-  if (v && state.varieties.indexOf(v) === -1) {
-    state.varieties.unshift(v);
-    if (state.varieties.length > 10) state.varieties.length = 10;
-  }
-  state.session.startedAt = Date.now();
-  saveState();
-  startSessionTicker();
-  renderSessionView();
 }
-
-function pauseSession() {
-  if (!state.session || !state.session.startedAt || state.session.paused || state.session.endedAt) return;
-  state.session.paused = true;
-  state.session.pauseStartedAt = Date.now();
-  saveState();
-  renderSessionView();
-}
-
-function resumeSession() {
-  if (!state.session || !state.session.paused) return;
-  state.session.totalPausedMs += Date.now() - state.session.pauseStartedAt;
-  state.session.paused = false;
-  state.session.pauseStartedAt = null;
-  saveState();
-  renderSessionView();
-}
-
-function endSession() {
-  if (!state.session || !state.session.startedAt || state.session.endedAt) return;
-  if (state.session.paused) {
-    state.session.totalPausedMs += Date.now() - state.session.pauseStartedAt;
-    state.session.paused = false;
-    state.session.pauseStartedAt = null;
-  }
-  state.session.endedAt = Date.now();
-  stopSessionTicker();
-  saveState();
-  renderSessionView();
-}
-
-function archiveSession() {
-  if (!state.session || !state.session.endedAt) return;
-  // If this session already exists in history (came from view), just clear it
-  var alreadyInHistory = state.sessions.some(function(s) { return s.id === state.session.id; });
-  if (!alreadyInHistory) {
-    state.sessions.push(state.session);
-  }
-  state.session = null;
-  // Return to history if we came from there, else to main
-  if (alreadyInHistory) {
-    state.view = 'history';
+$$('.overlay').forEach(o => {
+  if (o.id === 'overlay-confirm') {
+    o.addEventListener('click', e => { if (e.target === o) closeConfirm(); });
   } else {
-    state.view = 'main';
+    o.addEventListener('click', e => { if (e.target === o) closeOverlays(); });
   }
-  saveState();
-  renderViews();
-}
-
-function discardDraftSession() {
-  if (!state.session) return;
-  if (state.session.startedAt) return;
-  state.session = null;
-  state.view = 'main';
-  saveState();
-  renderViews();
-}
-
-function findPrep(pid) {
-  for (var i = 0; i < state.preparations.length; i++) {
-    if (state.preparations[i].id === pid) return state.preparations[i];
-  }
-  return null;
-}
-
-function sessionElapsedMs() {
-  if (!state.session || !state.session.startedAt) return 0;
-  var endTs = state.session.endedAt || Date.now();
-  var pausedMs = state.session.totalPausedMs;
-  if (state.session.paused) pausedMs += Date.now() - state.session.pauseStartedAt;
-  return Math.max(0, endTs - state.session.startedAt - pausedMs);
-}
-
-function containerCount(typeId, sess) {
-  var s = sess || state.session;
-  if (!s) return 0;
-  var c = 0;
-  s.events.forEach(function(e) {
-    if (e.type === 'container' && e.refId === typeId) c++;
-  });
-  return c;
-}
-
-function canisterCount(prepId, sess) {
-  var s = sess || state.session;
-  if (!s) return 0;
-  var c = 0;
-  s.events.forEach(function(e) {
-    if (e.type === 'canister' && e.refId === prepId) c++;
-  });
-  return c;
-}
-
-function containerCorrectionKg(typeId, sess) {
-  var s = sess || state.session;
-  if (!s) return 0;
-  var sum = 0;
-  s.events.forEach(function(e) {
-    if (e.type === 'container_corr' && e.refId === typeId) sum += (e.deltaKg || 0);
-  });
-  return sum;
-}
-
-function canisterCorrectionL(prepId, sess) {
-  var s = sess || state.session;
-  if (!s) return 0;
-  var sum = 0;
-  s.events.forEach(function(e) {
-    if (e.type === 'canister_corr' && e.refId === prepId) sum += (e.deltaL || 0);
-  });
-  return sum;
-}
-
-function sessionTotalKg() {
-  if (!state.session) return 0;
-  var sum = 0;
-  state.session.containerTypes.forEach(function(t) {
-    sum += containerCount(t.id) * t.weight + containerCorrectionKg(t.id);
-  });
-  return sum;
-}
-
-function sessionPrepLiters(prepId) {
-  if (!state.session) return 0;
-  var v = state.session.canVolumes[prepId];
-  if (v == null) {
-    var p = findPrep(prepId);
-    v = p ? (p.canVolume || 5) : 5;
-  }
-  return canisterCount(prepId) * v + canisterCorrectionL(prepId);
-}
-
-function addContainerType(weight, kind, size) {
-  if (!state.session) return;
-  state.session.containerTypes.push({
-    id: uid(),
-    weight: weight,
-    kind: kind || 'ящик',
-    size: size || ''
-  });
-  saveState();
-  renderSessionView();
-}
-
-function updateContainerType(typeId, patch) {
-  if (!state.session) return;
-  var t = state.session.containerTypes.find(function(x) { return x.id === typeId; });
-  if (!t) return;
-  if (patch.weight != null) t.weight = patch.weight;
-  if (patch.kind != null) t.kind = patch.kind;
-  if (patch.size !== undefined) t.size = patch.size;
-  saveState();
-}
-
-function applyContainerCorrection(typeId, deltaKg) {
-  if (!state.session || !deltaKg) return;
-  state.session.events.push({
-    id: uid(),
-    ts: Date.now(),
-    type: 'container_corr',
-    refId: typeId,
-    deltaKg: deltaKg
-  });
-  vibrate(30);
-  saveState();
-}
-
-function applyCanisterCorrection(prepId, deltaL) {
-  if (!state.session || !deltaL) return;
-  state.session.events.push({
-    id: uid(),
-    ts: Date.now(),
-    type: 'canister_corr',
-    refId: prepId,
-    deltaL: deltaL
-  });
-  vibrate(30);
-  saveState();
-}
-
-// Set count to specific value: adjust by adding or removing events
-function setContainerCount(typeId, newCount) {
-  if (!state.session) return;
-  if (newCount < 0) newCount = 0;
-  var current = containerCount(typeId);
-  if (newCount === current) return;
-  if (newCount > current) {
-    var add = newCount - current;
-    for (var i = 0; i < add; i++) {
-      state.session.events.push({
-        id: uid(), ts: Date.now() + i, type: 'container', refId: typeId
-      });
-    }
-  } else {
-    // remove (newest first) until count matches
-    var toRemove = current - newCount;
-    var idx = state.session.events.length - 1;
-    while (toRemove > 0 && idx >= 0) {
-      var e = state.session.events[idx];
-      if (e.type === 'container' && e.refId === typeId) {
-        state.session.events.splice(idx, 1);
-        toRemove--;
-      }
-      idx--;
-    }
-  }
-  saveState();
-}
-
-function setCanisterCount(prepId, newCount) {
-  if (!state.session) return;
-  if (newCount < 0) newCount = 0;
-  var current = canisterCount(prepId);
-  if (newCount === current) return;
-  if (newCount > current) {
-    var add = newCount - current;
-    for (var i = 0; i < add; i++) {
-      state.session.events.push({
-        id: uid(), ts: Date.now() + i, type: 'canister', refId: prepId
-      });
-    }
-  } else {
-    var toRemove = current - newCount;
-    var idx = state.session.events.length - 1;
-    while (toRemove > 0 && idx >= 0) {
-      var e = state.session.events[idx];
-      if (e.type === 'canister' && e.refId === prepId) {
-        state.session.events.splice(idx, 1);
-        toRemove--;
-      }
-      idx--;
-    }
-  }
-  saveState();
-}
-
-function removeContainerType(typeId) {
-  if (!state.session) return;
-  // Видаляємо тип і всі події з ним
-  state.session.containerTypes = state.session.containerTypes.filter(function(t) { return t.id !== typeId; });
-  state.session.events = state.session.events.filter(function(e) {
-    return !(e.type === 'container' && e.refId === typeId);
-  });
-  state.editingCtypeId = null;
-  saveState();
-  renderSessionView();
-}
-
-function removePrepFromSession(prepId) {
-  if (!state.session) return;
-  state.session.activePrepIds = state.session.activePrepIds.filter(function(p) { return p !== prepId; });
-  state.session.events = state.session.events.filter(function(e) {
-    return !(e.type === 'canister' && e.refId === prepId);
-  });
-  delete state.session.canVolumes[prepId];
-  state.editingPrepIdInSession = null;
-  saveState();
-  renderSessionView();
-}
-
-function addPrepToSession(prepId) {
-  if (!state.session) return;
-  if (state.session.activePrepIds.indexOf(prepId) !== -1) return;
-  state.session.activePrepIds.push(prepId);
-  var p = findPrep(prepId);
-  if (p) state.session.canVolumes[prepId] = p.canVolume || 5;
-  saveState();
-  renderSessionView();
-}
-
-function deleteCurrentSession() {
-  state.session = null;
-  state.editingCtypeId = null;
-  state.editingPrepIdInSession = null;
-  state.view = 'main';
-  stopSessionTicker();
-  saveState();
-  renderViews();
-}
-
-function addContainerEvent(typeId) {
-  if (!state.session || !state.session.startedAt || state.session.endedAt) return;
-  if (state.session.paused) return;
-  state.session.events.push({ id: uid(), ts: Date.now(), type: 'container', refId: typeId });
-  vibrate(30);
-  saveState();
-  renderSessionView();
-}
-
-function addCanisterEvent(prepId) {
-  if (!state.session || !state.session.startedAt || state.session.endedAt) return;
-  if (state.session.paused) return;
-  state.session.events.push({ id: uid(), ts: Date.now(), type: 'canister', refId: prepId });
-  vibrate([30, 30, 30]);
-  saveState();
-  renderSessionView();
-}
-
-function removeEvent(eventId) {
-  if (!state.session) return;
-  state.session.events = state.session.events.filter(function(e) { return e.id !== eventId; });
-  saveState();
-  renderSessionView();
-}
-
-function startSessionTicker() {
-  if (sessionTicker) clearInterval(sessionTicker);
-  sessionTicker = setInterval(function() {
-    if (state.view !== 'session') return;
-    if (!state.session || !state.session.startedAt || state.session.endedAt) {
-      stopSessionTicker();
-      return;
-    }
-    if (state.session.paused) return;
-    var el = document.getElementById('sessionTimer');
-    if (el) el.textContent = fmtElapsedHMS(sessionElapsedMs());
-    var tEl = document.getElementById('sessionTonnage');
-    if (tEl) tEl.textContent = fmtNum(sessionTotalKg());
-  }, 1000);
-}
-
-function stopSessionTicker() {
-  if (sessionTicker) clearInterval(sessionTicker);
-  sessionTicker = null;
-}
-
-// ── VIEW ROUTING ────────────────────────────────────────────────────────────
-
-function renderViews() {
-  var mainEl = document.getElementById('mainView');
-  var sessionEl = document.getElementById('sessionView');
-  var historyEl = document.getElementById('historyView');
-  if (state.view === 'session') {
-    mainEl.classList.add('hidden');
-    if (historyEl) historyEl.classList.add('hidden');
-    sessionEl.classList.remove('hidden');
-    renderSessionView();
-  } else if (state.view === 'history') {
-    mainEl.classList.add('hidden');
-    sessionEl.classList.add('hidden');
-    if (historyEl) {
-      historyEl.classList.remove('hidden');
-      renderHistoryView();
-    }
-  } else {
-    sessionEl.classList.add('hidden');
-    if (historyEl) historyEl.classList.add('hidden');
-    mainEl.classList.remove('hidden');
-    renderSessionEntry();
-  }
-}
-
-function renderSessionEntry() {
-  var btn = document.getElementById('sessionEntry');
-  if (!btn) return;
-  if (state.session && state.session.startedAt && !state.session.endedAt) {
-    var elapsed = fmtElapsedHMS(sessionElapsedMs());
-    var pausedTag = state.session.paused ? ' · ' + tr('paused') : '';
-    btn.className = 'session-entry active';
-    btn.innerHTML = '<div class="se-status">↻ ' + tr('sessionNumber') + state.session.number + ' · ' + elapsed + pausedTag + '</div>'
-      + '<div class="se-meta">' + escapeHtml(state.session.variety || '—') + '</div>';
-  } else if (state.session && !state.session.startedAt) {
-    btn.className = 'session-entry';
-    btn.innerHTML = '<div class="se-status">' + tr('sessionNumber') + state.session.number + ' · налаштування</div>';
-  } else {
-    btn.className = 'session-entry';
-    btn.innerHTML = '<div class="se-status">+ ' + tr('newSession') + '</div>';
-  }
-}
-
-function enterSessionView() {
-  if (!state.session) {
-    createDraftSession();
-  }
-  state.view = 'session';
-  renderViews();
-  if (state.session && state.session.startedAt && !state.session.endedAt) {
-    startSessionTicker();
-  }
-}
-
-function exitSessionView() {
-  state.view = 'main';
-  renderViews();
-}
-
-// ── SESSION VIEW RENDER ─────────────────────────────────────────────────────
-
-function renderSessionView() {
-  var root = document.getElementById('sessionView');
-  if (!root) return;
-  if (!state.session) {
-    root.innerHTML = '';
-    return;
-  }
-  if (state.session.endedAt) {
-    renderSessionCompleted(root);
-  } else if (state.session.startedAt) {
-    renderSessionActive(root);
-  } else {
-    renderSessionPreStart(root);
-  }
-}
-
-function renderSessionPreStart(root) {
-  var s = state.session;
-  var html = '';
-
-  // Header
-  html += '<div class="session-header">';
-  html += '<button class="session-back" data-action="discard">' + tr('cancelSessionBtn') + '</button>';
-  html += '<div class="session-title">' + tr('sessionNumber') + s.number + '</div>';
-  html += '<span style="width:60px;"></span>';
-  html += '</div>';
-
-  // Variety
-  html += '<div class="session-form">';
-  html += '<label class="form-label">' + tr('variety') + '</label>';
-  html += '<input class="form-input" id="sessVariety" value="' + escapeHtml(s.variety) + '" placeholder="' + escapeHtml(tr('varietyPlaceholder')) + '">';
-  if (state.varieties.length > 0) {
-    html += '<div class="variety-suggestions">';
-    state.varieties.slice(0, 6).forEach(function(v) {
-      html += '<button class="variety-chip" data-variety="' + escapeHtml(v) + '">' + escapeHtml(v) + '</button>';
-    });
-    html += '</div>';
-  }
-  html += '</div>';
-
-  // Container types
-  html += '<div class="session-form">';
-  html += '<label class="form-label">' + tr('containerType') + '</label>';
-  if (s.containerTypes.length > 0) {
-    s.containerTypes.forEach(function(t) {
-      var sizeLabel = t.size ? ' · ' + t.size : '';
-      html += '<div class="ctype-row">';
-      html += '<div class="ctype-info">';
-      html += '<div class="ctype-name">' + escapeHtml(t.kind) + ' ' + fmtNum(t.weight) + ' ' + tr('kg') + sizeLabel + '</div>';
-      html += '</div>';
-      html += '<button class="ctype-menu-btn" data-edit-ctype-pre="' + t.id + '">⋮</button>';
-      html += '</div>';
-    });
-  }
-  html += '<button class="add-stream-btn" data-action="addCtypePre">' + tr('addContainerType') + '</button>';
-  html += '</div>';
-
-  // Preparations selection
-  html += '<div class="session-form">';
-  html += '<label class="form-label">' + tr('selectPrepsForSession') + '</label>';
-  html += '<div class="prep-select-list">';
-  state.preparations.forEach(function(p) {
-    var sel = s.activePrepIds.indexOf(p.id) !== -1;
-    html += '<div class="prep-select-row ' + (sel ? 'selected' : '') + '" data-toggle-prep="' + p.id + '">';
-    html += '<div class="pscb"></div>';
-    html += '<div class="prep-select-name">' + escapeHtml(p.name || '—') + '</div>';
-    html += '<div class="prep-select-meta">' + fmtNum(p.norm) + ' ' + tr('mlPerTon') + ' · ' + (p.canVolume || 5) + ' ' + tr('liter') + '</div>';
-    html += '</div>';
-  });
-  html += '</div>';
-  html += '</div>';
-
-  // Start button
-  html += '<button class="session-major-btn" data-action="start">' + tr('startSessionBtn') + '</button>';
-
-  root.innerHTML = html;
-  attachPreStartHandlers(root);
-}
-
-function attachPreStartHandlers(root) {
-  var s = state.session;
-  if (window._dbg) window._dbg('attachPreStart, hasHandler=' + !!root._hasPreStartHandlers);
-
-  // Avoid attaching listener multiple times on re-render
-  if (root._hasPreStartHandlers) {
-    var varietyInput2 = root.querySelector('#sessVariety');
-    if (varietyInput2 && !varietyInput2._hasInputHandler) {
-      varietyInput2._hasInputHandler = true;
-      varietyInput2.addEventListener('input', function(e) {
-        if (state.session) state.session.variety = e.target.value;
-        saveState();
-      });
-    }
-    return;
-  }
-  root._hasPreStartHandlers = true;
-  if (window._dbg) window._dbg('preStart handlers ATTACHED');
-
-  // Single delegated click handler on root
-  root.addEventListener('click', function(e) {
-    if (window._dbg) window._dbg('preStart click, session=' + (state.session ? 'yes' : 'no') + ', started=' + (state.session && state.session.startedAt ? 'yes' : 'no'));
-    if (!state.session || state.session.startedAt) return;
-    var sess = state.session;
-    var target = e.target;
-
-    if (target.closest('[data-action="discard"]')) {
-      discardDraftSession();
-      return;
-    }
-
-    var varietyChip = target.closest('[data-variety]');
-    if (varietyChip) {
-      sess.variety = varietyChip.getAttribute('data-variety');
-      var vi = root.querySelector('#sessVariety');
-      if (vi) vi.value = sess.variety;
-      saveState();
-      return;
-    }
-
-    var editCtype = target.closest('[data-edit-ctype-pre]');
-    if (editCtype) {
-      if (window._dbg) window._dbg('→ openContainerModal(edit)');
-      openContainerModal(editCtype.getAttribute('data-edit-ctype-pre'));
-      return;
-    }
-
-    if (target.closest('[data-action="addCtypePre"]')) {
-      if (window._dbg) window._dbg('→ openContainerModal(new)');
-      openContainerModal(null);
-      return;
-    }
-
-    var togglePrep = target.closest('[data-toggle-prep]');
-    if (togglePrep) {
-      var pidStr = togglePrep.getAttribute('data-toggle-prep');
-      var pidNum = Number(pidStr);
-      var foundNum = state.preparations.some(function(p) { return p.id === pidNum; });
-      var pid = foundNum ? pidNum : pidStr;
-      var idx = sess.activePrepIds.indexOf(pid);
-      if (idx === -1) idx = sess.activePrepIds.indexOf(String(pid));
-      if (idx === -1) {
-        sess.activePrepIds.push(pid);
-      } else {
-        sess.activePrepIds.splice(idx, 1);
-      }
-      saveState();
-      renderSessionView();
-      return;
-    }
-
-    if (target.closest('[data-action="start"]')) {
-      if (window._dbg) window._dbg('→ startSession');
-      startSession();
-      return;
-    }
-  });
-
-  var varietyInput = root.querySelector('#sessVariety');
-  if (varietyInput && !varietyInput._hasInputHandler) {
-    varietyInput._hasInputHandler = true;
-    varietyInput.addEventListener('input', function(e) {
-      if (state.session) state.session.variety = e.target.value;
-      saveState();
-    });
-  }
-}
-
-function renderSessionActive(root) {
-  var s = state.session;
-  var html = '';
-
-  // Header
-  html += '<div class="session-header">';
-  html += '<button class="session-back" data-action="back">' + tr('backBtn') + '</button>';
-  html += '<div class="session-title">' + tr('sessionNumber') + s.number + '</div>';
-  html += '<span style="width:60px;"></span>';
-  html += '</div>';
-
-  // Subtitle
-  html += '<div style="text-align:center;color:var(--text-dim);font-size:13px;margin-bottom:14px;">';
-  html += escapeHtml(s.variety || '—');
-  html += '</div>';
-
-  // Timer block
-  html += '<div class="session-timer-block ' + (s.paused ? 'paused' : '') + '">';
-  html += '<div class="session-timer ' + (s.paused ? 'paused-text' : '') + '" id="sessionTimer">' + fmtElapsedHMS(sessionElapsedMs()) + '</div>';
-  if (s.paused) {
-    html += '<div class="session-paused-label">' + tr('paused') + '</div>';
-  }
-  html += '<div class="session-tonnage">' + tr('totalTonnage') + ': <strong id="sessionTonnage">' + fmtNum(sessionTotalKg()) + '</strong> ' + tr('kg') + '</div>';
-  html += '<button class="session-pause-btn" data-action="' + (s.paused ? 'resume' : 'pause') + '">';
-  html += s.paused ? '▶ ' + tr('resumeBtn') : '⏸ ' + tr('pauseBtn');
-  html += '</button>';
-  html += '</div>';
-
-  // Container types
-  html += '<h2>' + tr('containerType') + '</h2>';
-  s.containerTypes.forEach(function(t) {
-    var cnt = containerCount(t.id);
-    var kg = cnt * t.weight;
-
-    html += '<div class="ctype-row" data-ctype-id="' + t.id + '">';
-    html += '<div class="ctype-info">';
-    if (t.size) {
-      html += '<div class="ctype-size">' + escapeHtml(t.size) + '</div>';
-    }
-    html += '<div class="ctype-name">' + escapeHtml(t.kind) + ' ' + fmtNum(t.weight) + ' ' + tr('kg') + '</div>';
-    html += '<div class="ctype-meta">' + cnt + ' ' + tr('pcs') + ' · ' + fmtNum(kg) + ' ' + tr('kg') + '</div>';
-    html += '</div>';
-    html += '<div class="ctype-count">' + cnt + '</div>';
-    html += '<button class="ctype-add-btn" data-add-ctype="' + t.id + '" ' + (s.paused ? 'disabled' : '') + '>+1</button>';
-    html += '<button class="ctype-menu-btn" data-edit-ctype="' + t.id + '">⋮</button>';
-    html += '</div>';
-  });
-
-  html += '<button class="add-stream-btn" data-action="addCtypeNew" style="margin-bottom:18px;">' + tr('addContainerType') + '</button>';
-
-  // Preparations
-  html += '<h2>' + tr('preparations') + '</h2>';
-  if (s.activePrepIds.length > 0) {
-    s.activePrepIds.forEach(function(pid) {
-      var p = findPrep(pid);
-      if (!p) return;
-      var canVol = s.canVolumes[pid] || p.canVolume || 5;
-      var liters = sessionPrepLiters(pid);
-      var totalKg = sessionTotalKg();
-      var actualMlPerTon = totalKg > 0 ? (liters * 1000 / (totalKg / 1000)) : null;
-      var deviation = (actualMlPerTon !== null && p.norm > 0) ? (actualMlPerTon - p.norm) / p.norm * 100 : null;
-      var canCount = canisterCount(pid);
-
-      html += '<div class="session-prep-card" data-prep-card-id="' + pid + '">';
-      html += '<div class="session-prep-head">';
-      html += '<div class="session-prep-name">' + escapeHtml(p.name) + '</div>';
-      html += '<div style="display:flex;align-items:baseline;gap:8px;">';
-      html += '<div class="session-prep-volume">' + fmtNum(liters, liters % 1 ? 1 : 0) + ' ' + tr('liter') + '</div>';
-      html += '<button class="ctype-menu-btn" data-edit-prep="' + pid + '" style="margin-right:0;">⋮</button>';
-      html += '</div>';
-      html += '</div>';
-      if (actualMlPerTon !== null) {
-        var devStr = deviation !== null ? ' (' + (deviation > 0 ? '+' : '') + fmtNum(deviation, 1) + '%)' : '';
-        html += '<div class="session-prep-actual">' + tr('fact') + ': ' + fmtNum(actualMlPerTon, 1) + ' ' + tr('mlPerTon') + devStr + '</div>';
-      } else {
-        html += '<div class="session-prep-actual dimmed">' + tr('fact') + ': —</div>';
-      }
-      html += '<div class="session-prep-row">';
-      html += '<div class="session-prep-meta">' + canCount + ' × ' + canVol + ' ' + tr('liter') + '</div>';
-      html += '<button class="ctype-add-btn" data-add-canister="' + pid + '" ' + (s.paused ? 'disabled' : '') + '>+1</button>';
-      html += '</div>';
-      html += '</div>';
-    });
-  }
-
-  // Add prep during session
-  var inactivePreps = state.preparations.filter(function(p) {
-    return s.activePrepIds.indexOf(p.id) === -1;
-  });
-  if (inactivePreps.length > 0) {
-    html += '<button class="add-stream-btn" data-action="showAddPrep" style="margin-bottom:18px;">' + tr('addPrep') + '</button>';
-    html += '<div id="inSessionAddPrep" class="hidden" style="margin-bottom:18px;">';
-    html += '<div class="add-ctype-form">';
-    html += '<div class="prep-select-list">';
-    inactivePreps.forEach(function(p) {
-      html += '<div class="prep-select-row" data-add-prep="' + p.id + '">';
-      html += '<div class="pscb"></div>';
-      html += '<div class="prep-select-name">' + escapeHtml(p.name) + '</div>';
-      html += '<div class="prep-select-meta">' + fmtNum(p.norm) + ' ' + tr('mlPerTon') + ' · ' + (p.canVolume || 5) + ' ' + tr('liter') + '</div>';
-      html += '</div>';
-    });
-    html += '</div>';
-    html += '</div>';
-    html += '</div>';
-  }
-
-  // Log
-  html += '<div class="session-log">';
-  html += '<button class="log-toggle" data-action="toggleLog"><span>' + tr('log') + ' (' + s.events.length + ')</span><span id="logChevron">⌄</span></button>';
-  html += '<div id="logList" class="hidden"></div>';
-  html += '</div>';
-
-  // Bottom controls: end + delete
-  html += '<div class="session-controls">';
-  html += '<button class="session-major-btn danger confirm-btn" data-action="end" style="margin-top:0;">' + tr('endSessionBtn') + '</button>';
-  html += '<button class="session-delete-btn confirm-btn" data-action="deleteSession">' + tr('deleteSession') + '</button>';
-  html += '</div>';
-
-  root.innerHTML = html;
-  attachActiveHandlers(root);
-  bindConfirmButtonsActive(root);
-}
-
-function attachActiveHandlers(root) {
-  // Avoid duplicate listeners on re-render
-  if (root._hasActiveHandlers) return;
-  root._hasActiveHandlers = true;
-
-  root.addEventListener('click', function(e) {
-    if (!state.session || !state.session.startedAt || state.session.endedAt) return;
-    var s = state.session;
-    var target = e.target;
-
-    if (target.closest('[data-action="back"]')) { exitSessionView(); return; }
-    if (target.closest('[data-action="pause"]')) { pauseSession(); return; }
-    if (target.closest('[data-action="resume"]')) { resumeSession(); return; }
-
-    var addCtBtn = target.closest('[data-add-ctype]');
-    if (addCtBtn) {
-      addContainerEvent(addCtBtn.getAttribute('data-add-ctype'));
-      return;
-    }
-
-    var addCanBtn = target.closest('[data-add-canister]');
-    if (addCanBtn) {
-      var pid = addCanBtn.getAttribute('data-add-canister');
-      var pidNum = Number(pid);
-      var found = state.preparations.some(function(p) { return p.id === pidNum; });
-      addCanisterEvent(found ? pidNum : pid);
-      return;
-    }
-
-    var editCtBtn = target.closest('[data-edit-ctype]');
-    if (editCtBtn) {
-      openContainerModal(editCtBtn.getAttribute('data-edit-ctype'));
-      return;
-    }
-
-    var editPrBtn = target.closest('[data-edit-prep]');
-    if (editPrBtn) {
-      var ppid = editPrBtn.getAttribute('data-edit-prep');
-      var ppidNum = Number(ppid);
-      var foundP = state.preparations.some(function(p) { return p.id === ppidNum; });
-      openPrepModal(foundP ? ppidNum : ppid);
-      return;
-    }
-
-    if (target.closest('[data-action="addCtypeNew"]')) {
-      openContainerModal(null);
-      return;
-    }
-
-    if (target.closest('[data-action="showAddPrep"]')) {
-      var box = root.querySelector('#inSessionAddPrep');
-      if (box) box.classList.toggle('hidden');
-      return;
-    }
-
-    var addPrBtn = target.closest('[data-add-prep]');
-    if (addPrBtn) {
-      var apid = addPrBtn.getAttribute('data-add-prep');
-      var apidNum = Number(apid);
-      var foundAP = state.preparations.some(function(p) { return p.id === apidNum; });
-      addPrepToSession(foundAP ? apidNum : apid);
-      return;
-    }
-
-    if (target.closest('[data-action="toggleLog"]')) {
-      var list = root.querySelector('#logList');
-      var chev = root.querySelector('#logChevron');
-      if (!list) return;
-      var hidden = list.classList.contains('hidden');
-      if (hidden) {
-        renderLogList(list);
-        list.classList.remove('hidden');
-        list.classList.add('log-list');
-        if (chev) chev.textContent = '⌃';
-      } else {
-        list.classList.add('hidden');
-        list.classList.remove('log-list');
-        if (chev) chev.textContent = '⌄';
-      }
-      return;
-    }
-
-    var rmEvBtn = target.closest('[data-remove-event]');
-    if (rmEvBtn) {
-      removeEvent(rmEvBtn.getAttribute('data-remove-event'));
-      return;
-    }
-  });
-
-  // Two-stage confirm buttons need direct binding (they have local state)
-  // We'll re-bind them after each render via a separate function
-  bindConfirmButtonsActive(root);
-}
-
-function bindConfirmButtonsActive(root) {
-  var endBtn = root.querySelector('[data-action="end"]');
-  if (endBtn && !endBtn._armed) {
-    endBtn._armed = true;
-    armConfirmButton(endBtn, endSession);
-  }
-  var delSessBtn = root.querySelector('[data-action="deleteSession"]');
-  if (delSessBtn && !delSessBtn._armed) {
-    delSessBtn._armed = true;
-    armConfirmButton(delSessBtn, deleteCurrentSession);
-  }
-}
-
-// Two-stage confirm helper. First tap arms the button (visual change + countdown).
-// Second tap within ARM_WINDOW_MS executes the action. Otherwise auto-resets.
-var ARM_WINDOW_MS = 3000;
-function armConfirmButton(btn, action) {
-  var armed = false;
-  var timer = null;
-  var originalText = btn.textContent;
-
-  function disarm() {
-    armed = false;
-    btn.classList.remove('armed');
-    btn.textContent = originalText;
-    if (timer) { clearTimeout(timer); timer = null; }
-  }
-
-  btn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (!armed) {
-      armed = true;
-      btn.classList.add('armed');
-      btn.textContent = '↻ ' + tr('confirmDouble');
-      vibrate(40);
-      timer = setTimeout(disarm, ARM_WINDOW_MS);
-    } else {
-      disarm();
-      action();
-    }
-  });
-}
-
-function renderLogList(container) {
-  var s = state.session;
-  if (!s.events || s.events.length === 0) {
-    container.innerHTML = '<div class="log-empty">—</div>';
-    return;
-  }
-  var sorted = s.events.slice().sort(function(a, b) { return b.ts - a.ts; });
-  var html = '';
-  sorted.forEach(function(e) {
-    var desc = '';
-    if (e.type === 'container') {
-      var t = s.containerTypes.find(function(x) { return x.id === e.refId; });
-      if (t) {
-        var sz = t.size ? ' ' + t.size : '';
-        desc = '+1 ' + (t.kind || '') + ' ' + fmtNum(t.weight) + sz;
-      } else {
-        desc = '+1 ' + tr('kg');
-      }
-    } else if (e.type === 'container_corr') {
-      var ct = s.containerTypes.find(function(x) { return x.id === e.refId; });
-      var dKg = e.deltaKg != null ? e.deltaKg : (e.delta || 0);
-      var sgn = dKg > 0 ? '+' : '';
-      var nm = ct ? (ct.kind + ' ' + fmtNum(ct.weight) + (ct.size ? ' ' + ct.size : '')) : '?';
-      desc = sgn + fmtNum(dKg) + ' ' + tr('kg') + ' ' + nm + ' (' + tr('correction').toLowerCase() + ')';
-    } else if (e.type === 'canister') {
-      var p = findPrep(e.refId);
-      var v = s.canVolumes[e.refId] || (p ? p.canVolume : 5);
-      desc = '+' + v + ' ' + tr('liter') + ' ' + (p ? p.name : '?');
-    } else if (e.type === 'canister_corr') {
-      var pp = findPrep(e.refId);
-      var dL = e.deltaL != null ? e.deltaL : (e.delta || 0);
-      var sgn2 = dL > 0 ? '+' : '';
-      desc = sgn2 + fmtNum(dL, dL % 1 ? 1 : 0) + ' ' + tr('liter') + ' ' + (pp ? pp.name : '?') + ' (' + tr('correction').toLowerCase() + ')';
-    }
-    html += '<div class="log-item">';
-    html += '<div class="log-time">' + fmtClock(e.ts) + '</div>';
-    html += '<div class="log-desc">' + escapeHtml(desc) + '</div>';
-    html += '<button class="log-remove" data-remove-event="' + e.id + '">✕</button>';
-    html += '</div>';
-  });
-  container.innerHTML = html;
-  container.querySelectorAll('[data-remove-event]').forEach(function(el) {
-    el.addEventListener('click', function() {
-      removeEvent(el.getAttribute('data-remove-event'));
-    });
-  });
-}
-
-function renderSessionCompleted(root) {
-  var s = state.session;
-  var html = '';
-
-  html += '<div class="session-header">';
-  html += '<span style="width:60px;"></span>';
-  html += '<div class="session-title">' + tr('sessionCompleted') + '</div>';
-  html += '<span style="width:60px;"></span>';
-  html += '</div>';
-
-  var totalMs = sessionElapsedMs();
-  var totalKg = sessionTotalKg();
-  var totalContainers = state.session.events.filter(function(e) { return e.type === 'container'; }).length;
-  var avgSpeed = totalMs > 0 ? totalKg / (totalMs / 60000) : 0;
-
-  html += '<div class="summary-card">';
-  html += '<div class="summary-title">' + tr('sessionNumber') + s.number + '</div>';
-  html += '<div class="summary-subtitle">' + escapeHtml(s.variety || '—') + ' · ' + fmtDate(s.startedAt) + '</div>';
-
-  html += '<div class="summary-row">';
-  html += '<div class="summary-key">' + tr('duration') + '</div>';
-  html += '<div class="summary-val">' + fmtElapsedHMS(totalMs) + '</div>';
-  html += '</div>';
-
-  html += '<div class="summary-row">';
-  html += '<div class="summary-key">' + tr('containers') + '</div>';
-  html += '<div class="summary-val">' + totalContainers + ' ' + tr('pcs') + '</div>';
-  html += '</div>';
-
-  html += '<div class="summary-row">';
-  html += '<div class="summary-key">' + tr('totalTonnage') + '</div>';
-  html += '<div class="summary-val highlight">' + fmtNum(totalKg) + ' ' + tr('kg') + '</div>';
-  html += '</div>';
-
-  html += '<div class="summary-row">';
-  html += '<div class="summary-key">' + tr('avgSpeed') + '</div>';
-  html += '<div class="summary-val">' + (avgSpeed > 0 ? fmtNum(avgSpeed, 0) + ' ' + tr('kgPerMin') : '—') + '</div>';
-  html += '</div>';
-
-  // Per-container breakdown
-  if (s.containerTypes.length > 1) {
-    html += '<div class="summary-section">';
-    html += '<div class="summary-section-label">' + tr('containerType') + '</div>';
-    s.containerTypes.forEach(function(t) {
-      var cnt = containerCount(t.id, s);
-      var sz = t.size ? ' ' + t.size : '';
-      var lbl = t.kind + ' ' + fmtNum(t.weight) + ' ' + tr('kg') + sz;
-      html += '<div class="summary-row">';
-      html += '<div class="summary-key">' + escapeHtml(lbl) + '</div>';
-      html += '<div class="summary-val">' + cnt + ' × = ' + fmtNum(cnt * t.weight) + ' ' + tr('kg') + '</div>';
-      html += '</div>';
-    });
-    html += '</div>';
-  }
-
-  // Preparations
-  if (s.activePrepIds.length > 0) {
-    html += '<div class="summary-section">';
-    html += '<div class="summary-section-label">' + tr('preparations') + '</div>';
-    s.activePrepIds.forEach(function(pid) {
-      var p = findPrep(pid);
-      if (!p) return;
-      var liters = sessionPrepLiters(pid);
-      var actualNorm = totalKg > 0 ? (liters * 1000 / (totalKg / 1000)) : null;
-      var devStr = '';
-      if (actualNorm !== null && p.norm > 0) {
-        var dev = (actualNorm - p.norm) / p.norm * 100;
-        devStr = ' (' + (dev > 0 ? '+' : '') + fmtNum(dev, 1) + '%)';
-      }
-      html += '<div class="summary-row">';
-      html += '<div class="summary-key">' + escapeHtml(p.name) + '</div>';
-      html += '<div class="summary-val">' + fmtNum(liters, liters % 1 ? 1 : 0) + ' ' + tr('liter') + '</div>';
-      html += '</div>';
-      if (actualNorm !== null) {
-        html += '<div class="summary-row">';
-        html += '<div class="summary-key" style="padding-left:12px;">' + tr('fact') + '</div>';
-        html += '<div class="summary-val" style="font-size:13px;color:var(--teal);">' + fmtNum(actualNorm, 1) + ' ' + tr('mlPerTon') + devStr + '</div>';
-        html += '</div>';
-      }
-    });
-    html += '</div>';
-  }
-
-  html += '</div>';
-
-  html += '<button class="session-major-btn" data-action="archive">' + tr('closeBtn') + '</button>';
-
-  root.innerHTML = html;
-
-  root.querySelector('[data-action="archive"]').addEventListener('click', archiveSession);
-}
-
-// ── MODALS ──────────────────────────────────────────────────────────────────
-
-function closeModalDom() {
-  var existing = document.getElementById('modalRoot');
-  if (existing) existing.parentNode.removeChild(existing);
-}
-
-function closeModal() {
-  closeModalDom();
-  state.modal = null;
-}
-
-// Simple text prompt modal. Returns via callback.
-function openTextPrompt(title, hint, onSubmit) {
-  state.modal = {
-    kind: 'textPrompt',
-    title: title,
-    hint: hint,
-    onSubmit: onSubmit
-  };
-  renderModal();
-}
-
-function renderTextPromptModal(backdrop) {
-  var m = state.modal;
-  var modal = document.createElement('div');
-  modal.className = 'modal';
-  var html = '';
-  html += '<div class="modal-header">';
-  html += '<div class="modal-title">' + escapeHtml(m.title) + '</div>';
-  html += '<button class="modal-close" data-action="close">✕</button>';
-  html += '</div>';
-  html += '<div class="modal-section">';
-  html += '<input type="text" class="modal-input" data-role="textInput" placeholder="' + escapeHtml(m.hint || '') + '" autofocus>';
-  html += '</div>';
-  html += '<div class="modal-actions">';
-  html += '<button class="btn btn-secondary" data-action="close">' + tr('cancelBtn') + '</button>';
-  html += '<button class="btn btn-primary" data-action="submit">' + tr('saveBtn') + '</button>';
-  html += '</div>';
-  modal.innerHTML = html;
-  backdrop.appendChild(modal);
-
-  var input = modal.querySelector('[data-role="textInput"]');
-  setTimeout(function() { if (input) input.focus(); }, 50);
-
-  modal.querySelectorAll('[data-action="close"]').forEach(function(el) {
-    el.addEventListener('click', closeModal);
-  });
-  modal.querySelector('[data-action="submit"]').addEventListener('click', function() {
-    var v = input.value.trim();
-    var cb = m.onSubmit;
-    closeModal();
-    if (v && cb) cb(v);
-  });
-  if (input) {
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        var v = input.value.trim();
-        var cb = m.onSubmit;
-        closeModal();
-        if (v && cb) cb(v);
-      }
-    });
-  }
-}
-
-function openContainerModal(typeId) {
-  // typeId === null => create mode
-  var t = null;
-  if (typeId) {
-    t = state.session.containerTypes.find(function(x) { return x.id === typeId; });
-    if (!t) return;
-  }
-  state.modal = {
-    kind: 'container',
-    typeId: typeId,
-    draft: {
-      kind: t ? t.kind : (state.containerKinds[0] || 'ящик'),
-      size: t ? (t.size || '') : '',
-      weight: t ? t.weight : ''
-    }
-  };
-  renderModal();
-}
-
-function openPrepModal(prepId) {
-  var p = findPrep(prepId);
-  if (!p) return;
-  var canVol = state.session.canVolumes[prepId] || p.canVolume || 5;
-  state.modal = {
-    kind: 'prep',
-    prepId: prepId,
-    draft: {
-      canVolume: canVol
-    }
-  };
-  renderModal();
-}
-
-function renderModal() {
-  closeModalDom();
-  if (!state.modal) return;
-  var backdrop = document.createElement('div');
-  backdrop.id = 'modalRoot';
-  backdrop.className = 'modal-backdrop';
-  backdrop.addEventListener('click', function(e) {
-    if (e.target === backdrop) closeModal();
-  });
-
-  if (state.modal.kind === 'container') renderContainerModal(backdrop);
-  else if (state.modal.kind === 'prep') renderPrepModal(backdrop);
-  else if (state.modal.kind === 'textPrompt') renderTextPromptModal(backdrop);
-
-  document.body.appendChild(backdrop);
-  if (window._dbg) window._dbg('modal RENDERED, kind=' + state.modal.kind);
-}
-
-function renderContainerModal(backdrop) {
-  var m = state.modal;
-  var isNew = !m.typeId;
-  var t = isNew ? null : state.session.containerTypes.find(function(x) { return x.id === m.typeId; });
-  var cnt = !isNew && t ? containerCount(t.id) : 0;
-
-  var modal = document.createElement('div');
-  modal.className = 'modal';
-  var html = '';
-
-  html += '<div class="modal-header">';
-  html += '<div class="modal-title">' + (isNew ? tr('addContainerType') : tr('edit')) + '</div>';
-  html += '<button class="modal-close" data-action="close">✕</button>';
-  html += '</div>';
-
-  // Size chips — ПЕРШИМИ
-  html += '<div class="modal-section">';
-  html += '<label class="modal-label">' + tr('size') + '</label>';
-  html += '<div class="chip-row" data-role="sizeChips">';
-  state.sizes.forEach(function(sz) {
-    var sel = m.draft.size === sz ? 'selected' : '';
-    html += '<button class="chip ' + sel + '" data-size="' + escapeHtml(sz) + '">'
-      + escapeHtml(sz)
-      + '<span class="chip-remove" data-remove-size="' + escapeHtml(sz) + '">×</span>'
-      + '</button>';
-  });
-  html += '<button class="chip chip-add" data-action="addSize">+</button>';
-  html += '</div>';
-  html += '</div>';
-
-  // Kind chips — ДРУГИМИ
-  html += '<div class="modal-section">';
-  html += '<label class="modal-label">' + tr('kind') + '</label>';
-  html += '<div class="chip-row" data-role="kindChips">';
-  state.containerKinds.forEach(function(k) {
-    var sel = m.draft.kind === k ? 'selected' : '';
-    var isPermanent = PERMANENT_KINDS.indexOf(k) !== -1;
-    html += '<button class="chip ' + sel + '" data-kind="' + escapeHtml(k) + '">'
-      + escapeHtml(k)
-      + (isPermanent ? '' : '<span class="chip-remove" data-remove-kind="' + escapeHtml(k) + '">×</span>')
-      + '</button>';
-  });
-  html += '<button class="chip chip-add" data-action="addKind">+</button>';
-  html += '</div>';
-  html += '</div>';
-
-  // Weight — ТРЕТЬОЮ
-  html += '<div class="modal-section">';
-  html += '<label class="modal-label">' + tr('weight') + '</label>';
-  html += '<div class="modal-row">';
-  html += '<input type="number" inputmode="decimal" class="modal-input text-right" data-role="weight" value="' + (m.draft.weight || '') + '" placeholder="1000">';
-  html += '<span class="unit-tag">' + tr('kg') + '</span>';
-  html += '</div>';
-  html += '<div class="chip-row" style="margin-top:8px;">';
-  SESSION_PRESETS.forEach(function(p) {
-    html += '<button class="chip" data-weight-preset="' + p + '">' + p + '</button>';
-  });
-  html += '</div>';
-  html += '</div>';
-
-  // Counter and correction (only for existing type)
-  if (!isNew) {
-    var corrKg = containerCorrectionKg(t.id);
-    var totalKg = cnt * t.weight + corrKg;
-    html += '<div class="modal-section" style="padding-top:14px;border-top:1px solid var(--border);">';
-    html += '<label class="modal-label">' + tr('countUnits') + '</label>';
-    html += '<div class="counter-row">';
-    html += '<button class="counter-btn" data-action="decCount">−</button>';
-    html += '<input type="number" inputmode="numeric" class="counter-value" data-role="count" value="' + cnt + '">';
-    html += '<button class="counter-btn" data-action="incCount">+</button>';
-    html += '</div>';
-    html += '</div>';
-
-    html += '<div class="modal-section">';
-    html += '<label class="modal-label">' + tr('correctionKg') + '</label>';
-    html += '<div class="modal-row">';
-    html += '<input type="number" inputmode="numeric" class="modal-input text-right" data-role="correction" value="' + (corrKg || '') + '" placeholder="±N">';
-    html += '<span class="unit-tag">' + tr('kg') + '</span>';
-    html += '</div>';
-    html += '<div class="modal-hint">' + tr('correctionHintKg') + '</div>';
-    html += '<div class="summary-line">';
-    html += '<span data-role="summaryCount">' + cnt + '</span> × ' + fmtNum(t.weight) + ' ';
-    html += '<span data-role="summarySign">' + (corrKg >= 0 ? '+' : '−') + '</span> ';
-    html += '<span data-role="summaryCorr">' + fmtNum(Math.abs(corrKg)) + '</span> = ';
-    html += '<strong data-role="summaryTotal">' + fmtNum(totalKg) + '</strong> ' + tr('kg');
-    html += '</div>';
-    html += '</div>';
-  }
-
-  // Actions
-  html += '<div class="modal-actions">';
-  html += '<button class="btn btn-secondary" data-action="close">' + tr('cancelBtn') + '</button>';
-  html += '<button class="btn btn-primary" data-action="save">' + tr('saveBtn') + '</button>';
-  html += '</div>';
-
-  // Delete (only for existing)
-  if (!isNew) {
-    html += '<button class="modal-delete-btn confirm-btn" data-action="delete">';
-    html += '✕ ' + tr('deleteType') + (cnt > 0 ? ' (' + cnt + ' ' + tr('pcs') + ')' : '');
-    html += '</button>';
-  }
-
-  modal.innerHTML = html;
-  backdrop.appendChild(modal);
-
-  attachContainerModalHandlers(modal, isNew, t);
-}
-
-function attachContainerModalHandlers(modal, isNew, t) {
-  var m = state.modal;
-
-  modal.querySelectorAll('[data-action="close"]').forEach(function(el) {
-    el.addEventListener('click', closeModal);
-  });
-
-  // Kind chips
-  modal.querySelectorAll('[data-kind]').forEach(function(el) {
-    el.addEventListener('click', function(e) {
-      if (e.target.closest('[data-remove-kind]')) return; // handled below
-      m.draft.kind = el.getAttribute('data-kind');
-      modal.querySelectorAll('[data-kind]').forEach(function(b) {
-        b.classList.toggle('selected', b.getAttribute('data-kind') === m.draft.kind);
-      });
-    });
-  });
-
-  modal.querySelectorAll('[data-remove-kind]').forEach(function(el) {
-    el.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var name = el.getAttribute('data-remove-kind');
-      state.containerKinds = state.containerKinds.filter(function(k) { return k !== name; });
-      if (m.draft.kind === name) m.draft.kind = state.containerKinds[0] || '';
-      saveState();
-      renderModal();
-    });
-  });
-
-  modal.querySelector('[data-action="addKind"]').addEventListener('click', function() {
-    openTextPrompt(tr('addKindTitle'), tr('addKindHint'), function(name) {
-      if (state.containerKinds.indexOf(name) === -1) {
-        state.containerKinds.push(name);
-        saveState();
-      }
-      m.draft.kind = name;
-      renderModal();
-    });
-  });
-
-  // Weight presets
-  modal.querySelectorAll('[data-weight-preset]').forEach(function(el) {
-    el.addEventListener('click', function() {
-      var w = Number(el.getAttribute('data-weight-preset'));
-      m.draft.weight = w;
-      var inp = modal.querySelector('[data-role="weight"]');
-      if (inp) inp.value = w;
-    });
-  });
-
-  modal.querySelector('[data-role="weight"]').addEventListener('input', function(e) {
-    m.draft.weight = e.target.value === '' ? '' : Number(e.target.value);
-  });
-
-  // Size chips
-  modal.querySelectorAll('[data-size]').forEach(function(el) {
-    el.addEventListener('click', function(e) {
-      if (e.target.closest('[data-remove-size]')) return;
-      m.draft.size = el.getAttribute('data-size');
-      modal.querySelectorAll('[data-size]').forEach(function(b) {
-        b.classList.toggle('selected', b.getAttribute('data-size') === m.draft.size);
-      });
-    });
-  });
-
-  modal.querySelectorAll('[data-remove-size]').forEach(function(el) {
-    el.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var name = el.getAttribute('data-remove-size');
-      state.sizes = state.sizes.filter(function(s) { return s !== name; });
-      if (m.draft.size === name) m.draft.size = '';
-      saveState();
-      renderModal();
-    });
-  });
-
-  modal.querySelector('[data-action="addSize"]').addEventListener('click', function() {
-    openTextPrompt(tr('addSizeTitle'), tr('addSizeHint'), function(name) {
-      if (state.sizes.indexOf(name) === -1) {
-        state.sizes.push(name);
-        saveState();
-      }
-      m.draft.size = name;
-      renderModal();
-    });
-  });
-
-  // Counter (− N +) and live summary
-  var countInput = modal.querySelector('[data-role="count"]');
-  var corrInputEl = modal.querySelector('[data-role="correction"]');
-  var sumCountEl = modal.querySelector('[data-role="summaryCount"]');
-  var sumSignEl = modal.querySelector('[data-role="summarySign"]');
-  var sumCorrEl = modal.querySelector('[data-role="summaryCorr"]');
-  var sumTotalEl = modal.querySelector('[data-role="summaryTotal"]');
-
-  function refreshSummary() {
-    if (!sumTotalEl || !t) return;
-    var c = Number(countInput.value) || 0;
-    var corr = Number(corrInputEl.value) || 0;
-    var w = Number(modal.querySelector('[data-role="weight"]').value) || t.weight;
-    var total = c * w + corr;
-    sumCountEl.textContent = c;
-    sumSignEl.textContent = corr >= 0 ? '+' : '−';
-    sumCorrEl.textContent = fmtNum(Math.abs(corr));
-    sumTotalEl.textContent = fmtNum(total);
-  }
-
-  if (countInput) {
-    countInput.addEventListener('input', refreshSummary);
-    var decBtn = modal.querySelector('[data-action="decCount"]');
-    var incBtn = modal.querySelector('[data-action="incCount"]');
-    if (decBtn) decBtn.addEventListener('click', function() {
-      var v = Number(countInput.value) || 0;
-      if (v > 0) v--;
-      countInput.value = v;
-      refreshSummary();
-    });
-    if (incBtn) incBtn.addEventListener('click', function() {
-      var v = Number(countInput.value) || 0;
-      v++;
-      countInput.value = v;
-      refreshSummary();
-    });
-  }
-  if (corrInputEl) {
-    corrInputEl.addEventListener('input', refreshSummary);
-  }
-  modal.querySelector('[data-role="weight"]').addEventListener('input', refreshSummary);
-
-  // Save
-  modal.querySelector('[data-action="save"]').addEventListener('click', function() {
-    var w = Number(m.draft.weight);
-    if (!isFinite(w) || w <= 0) {
-      modal.querySelector('[data-role="weight"]').focus();
-      return;
-    }
-    if (isNew) {
-      addContainerType(w, m.draft.kind, m.draft.size);
-    } else {
-      updateContainerType(t.id, { weight: w, kind: m.draft.kind, size: m.draft.size });
-      // Apply count change (if user changed via counter)
-      if (countInput) {
-        var newCount = Number(countInput.value);
-        if (isFinite(newCount) && newCount >= 0) {
-          setContainerCount(t.id, newCount);
-        }
-      }
-      // Apply correction (replace existing correction with new value)
-      if (corrInputEl) {
-        var newCorr = Number(corrInputEl.value) || 0;
-        var oldCorr = containerCorrectionKg(t.id);
-        var deltaToApply = newCorr - oldCorr;
-        if (deltaToApply !== 0) {
-          applyContainerCorrection(t.id, deltaToApply);
-        }
-      }
-    }
-    closeModal();
-    renderSessionView();
-  });
-
-  // Delete
-  if (!isNew) {
-    var delBtn = modal.querySelector('[data-action="delete"]');
-    if (delBtn) armConfirmButton(delBtn, function() {
-      removeContainerType(t.id);
-      closeModal();
-    });
-  }
-}
-
-function renderPrepModal(backdrop) {
-  var m = state.modal;
-  var p = findPrep(m.prepId);
-  if (!p) { closeModal(); return; }
-  var cnt = canisterCount(m.prepId);
-  var canVol = m.draft.canVolume;
-  var corrL = canisterCorrectionL(m.prepId);
-  var liters = sessionPrepLiters(m.prepId);
-
-  var modal = document.createElement('div');
-  modal.className = 'modal';
-  var html = '';
-
-  html += '<div class="modal-header">';
-  html += '<div class="modal-title">' + escapeHtml(p.name) + '</div>';
-  html += '<button class="modal-close" data-action="close">✕</button>';
-  html += '</div>';
-
-  // Canister volume
-  html += '<div class="modal-section">';
-  html += '<label class="modal-label">' + tr('canVolume') + '</label>';
-  html += '<div class="modal-row">';
-  html += '<input type="number" inputmode="decimal" class="modal-input text-right" data-role="canVol" value="' + canVol + '">';
-  html += '<span class="unit-tag">' + tr('liter') + '</span>';
-  html += '</div>';
-  html += '</div>';
-
-  // Count (− N +)
-  html += '<div class="modal-section" style="padding-top:14px;border-top:1px solid var(--border);">';
-  html += '<label class="modal-label">' + tr('countUnits') + '</label>';
-  html += '<div class="counter-row">';
-  html += '<button class="counter-btn" data-action="decCount">−</button>';
-  html += '<input type="number" inputmode="numeric" class="counter-value" data-role="count" value="' + cnt + '">';
-  html += '<button class="counter-btn" data-action="incCount">+</button>';
-  html += '</div>';
-  html += '</div>';
-
-  // Correction (L)
-  html += '<div class="modal-section">';
-  html += '<label class="modal-label">' + tr('correctionL') + '</label>';
-  html += '<div class="modal-row">';
-  html += '<input type="number" inputmode="decimal" class="modal-input text-right" data-role="correction" value="' + (corrL || '') + '" placeholder="±N">';
-  html += '<span class="unit-tag">' + tr('liter') + '</span>';
-  html += '</div>';
-  html += '<div class="modal-hint">' + tr('correctionHintKg') + '</div>';
-  html += '<div class="summary-line">';
-  html += '<span data-role="summaryCount">' + cnt + '</span> × <span data-role="summaryVol">' + canVol + '</span> ';
-  html += '<span data-role="summarySign">' + (corrL >= 0 ? '+' : '−') + '</span> ';
-  html += '<span data-role="summaryCorr">' + fmtNum(Math.abs(corrL), corrL % 1 ? 1 : 0) + '</span> = ';
-  html += '<strong data-role="summaryTotal">' + fmtNum(liters, liters % 1 ? 1 : 0) + '</strong> ' + tr('liter');
-  html += '</div>';
-  html += '</div>';
-
-  // Actions
-  html += '<div class="modal-actions">';
-  html += '<button class="btn btn-secondary" data-action="close">' + tr('cancelBtn') + '</button>';
-  html += '<button class="btn btn-primary" data-action="save">' + tr('saveBtn') + '</button>';
-  html += '</div>';
-
-  html += '<button class="modal-delete-btn confirm-btn" data-action="remove">';
-  html += '✕ ' + tr('removeFromSession') + (cnt > 0 ? ' (' + cnt + ' кан)' : '');
-  html += '</button>';
-
-  modal.innerHTML = html;
-  backdrop.appendChild(modal);
-
-  var canVolInput = modal.querySelector('[data-role="canVol"]');
-  var countInput = modal.querySelector('[data-role="count"]');
-  var corrInputEl = modal.querySelector('[data-role="correction"]');
-  var sumCountEl = modal.querySelector('[data-role="summaryCount"]');
-  var sumVolEl = modal.querySelector('[data-role="summaryVol"]');
-  var sumSignEl = modal.querySelector('[data-role="summarySign"]');
-  var sumCorrEl = modal.querySelector('[data-role="summaryCorr"]');
-  var sumTotalEl = modal.querySelector('[data-role="summaryTotal"]');
-
-  function refreshSummary() {
-    var c = Number(countInput.value) || 0;
-    var v = Number(canVolInput.value) || 0;
-    var corr = Number(corrInputEl.value) || 0;
-    var total = c * v + corr;
-    sumCountEl.textContent = c;
-    sumVolEl.textContent = v;
-    sumSignEl.textContent = corr >= 0 ? '+' : '−';
-    sumCorrEl.textContent = fmtNum(Math.abs(corr), Math.abs(corr) % 1 ? 1 : 0);
-    sumTotalEl.textContent = fmtNum(total, total % 1 ? 1 : 0);
-  }
-
-  canVolInput.addEventListener('input', refreshSummary);
-  countInput.addEventListener('input', refreshSummary);
-  corrInputEl.addEventListener('input', refreshSummary);
-
-  modal.querySelector('[data-action="decCount"]').addEventListener('click', function() {
-    var v = Number(countInput.value) || 0;
-    if (v > 0) v--;
-    countInput.value = v;
-    refreshSummary();
-  });
-  modal.querySelector('[data-action="incCount"]').addEventListener('click', function() {
-    var v = Number(countInput.value) || 0;
-    v++;
-    countInput.value = v;
-    refreshSummary();
-  });
-
-  modal.querySelectorAll('[data-action="close"]').forEach(function(el) {
-    el.addEventListener('click', closeModal);
-  });
-
-  modal.querySelector('[data-action="save"]').addEventListener('click', function() {
-    var newCan = Number(canVolInput.value);
-    if (!isFinite(newCan) || newCan <= 0) { canVolInput.focus(); return; }
-    state.session.canVolumes[m.prepId] = newCan;
-
-    // Apply count change
-    var newCount = Number(countInput.value);
-    if (isFinite(newCount) && newCount >= 0) {
-      setCanisterCount(m.prepId, newCount);
-    }
-
-    // Apply correction (replace existing with new value)
-    var newCorr = Number(corrInputEl.value) || 0;
-    var oldCorr = canisterCorrectionL(m.prepId);
-    var deltaToApply = newCorr - oldCorr;
-    if (deltaToApply !== 0) {
-      applyCanisterCorrection(m.prepId, deltaToApply);
-    }
-
-    saveState();
-    closeModal();
-    renderSessionView();
-  });
-
-  var rmBtn = modal.querySelector('[data-action="remove"]');
-  if (rmBtn) armConfirmButton(rmBtn, function() {
-    removePrepFromSession(m.prepId);
-    closeModal();
-  });
-}
-
-// ── HISTORY VIEW ────────────────────────────────────────────────────────────
-
-function deleteSessionFromHistory(sessionId) {
-  state.sessions = state.sessions.filter(function(s) { return s.id !== sessionId; });
-  saveState();
-  renderHistoryView();
-}
-
-function renderHistoryView() {
-  var root = document.getElementById('historyView');
-  if (!root) return;
-
-  var html = '';
-  html += '<div class="session-header">';
-  html += '<button class="session-back" data-action="back">' + tr('backBtn') + '</button>';
-  html += '<div class="session-title">' + tr('sessionsList') + '</div>';
-  html += '<span style="width:60px;"></span>';
-  html += '</div>';
-
-  if (state.sessions.length === 0) {
-    html += '<div style="text-align:center;color:var(--text-dim);padding:40px 20px;">' + tr('noSessions') + '</div>';
-  } else {
-    var sorted = state.sessions.slice().sort(function(a, b) {
-      return (b.endedAt || 0) - (a.endedAt || 0);
-    });
-    sorted.forEach(function(s) {
-      var totalKg = 0;
-      s.containerTypes.forEach(function(t) {
-        totalKg += containerCount(t.id, s) * t.weight;
-      });
-      var totalContainers = s.events.filter(function(e) { return e.type === 'container'; }).length;
-      var corrSum = s.events.filter(function(e) { return e.type === 'container_corr'; })
-        .reduce(function(acc, e) { return acc + (e.delta || 0); }, 0);
-      totalContainers += corrSum;
-
-      html += '<div class="history-row">';
-      html += '<div class="history-head">';
-      html += '<div class="history-num">' + tr('sessionNumber') + s.number + '</div>';
-      html += '<div class="history-date">' + fmtDate(s.startedAt) + '</div>';
-      html += '</div>';
-      if (s.variety) {
-        html += '<div style="font-size:13px;color:var(--text);margin-bottom:6px;">' + escapeHtml(s.variety) + '</div>';
-      }
-      html += '<div class="history-meta">';
-      html += '<span><strong>' + fmtNum(totalKg) + '</strong> ' + tr('kg') + '</span>';
-      html += '<span>' + totalContainers + ' ' + tr('pcs') + '</span>';
-      html += '</div>';
-      html += '<div class="history-actions">';
-      html += '<button data-view-session="' + s.id + '">' + tr('viewSession') + '</button>';
-      html += '<button class="del confirm-btn" data-delete-session="' + s.id + '">✕</button>';
-      html += '</div>';
-      html += '</div>';
-    });
-  }
-
-  root.innerHTML = html;
-
-  root.querySelector('[data-action="back"]').addEventListener('click', function() {
-    state.view = 'main';
-    renderViews();
-  });
-
-  root.querySelectorAll('[data-view-session]').forEach(function(el) {
-    el.addEventListener('click', function() {
-      var sid = el.getAttribute('data-view-session');
-      var s = state.sessions.find(function(x) { return x.id === sid; });
-      if (!s) return;
-      // Clone into state.session for viewing in completed mode
-      state.session = JSON.parse(JSON.stringify(s));
-      state.view = 'session';
-      renderViews();
-    });
-  });
-
-  root.querySelectorAll('[data-delete-session]').forEach(function(el) {
-    armConfirmButton(el, function() {
-      deleteSessionFromHistory(el.getAttribute('data-delete-session'));
-    });
-  });
-}
-
-function init() {
-  loadState();
-  applyTheme();
-  renderI18n();
-  renderTimer();
-  renderStreams();
-  renderManualInput();
-  renderPreparations();
-  updateSpeedDisplay();
-  renderSessionEntry();
-
-  // If stopwatch was running when app was closed/backgrounded — resume it.
-  if (state.timer.running && state.timer.startMs) {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(tickTimer, 100);
-    acquireWakeLock();
-    renderTimer();
-  }
-
-  // When the screen comes back on / tab becomes visible again:
-  //   1. Repaint immediately (don't wait up to 100 ms for next tick).
-  //   2. Re-acquire wake lock (it auto-releases when tab is hidden).
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState !== 'visible') return;
-    if (state.timer.running && state.timer.startMs) {
-      state.timer.elapsedMs = Date.now() - state.timer.startMs;
-      var d = document.getElementById('timerDisplay');
-      if (d) d.textContent = fmtTime(state.timer.elapsedMs);
-      acquireWakeLock();
-    }
-  });
-
-  // If session is active and was paused-by-app-close (not user-paused),
-  // continue running. Persistent timer recovers correctly.
-  if (state.session && state.session.startedAt && !state.session.endedAt && !state.session.paused) {
-    startSessionTicker();
-  }
-
-  // Update session entry once a second to show running time
-  setInterval(function() {
-    if (state.view === 'main' && state.session && state.session.startedAt && !state.session.endedAt) {
-      renderSessionEntry();
-    }
-  }, 1000);
-
-  document.getElementById('sessionEntry').addEventListener('click', enterSessionView);
-
-  var histBtn = document.getElementById('historyEntry');
-  if (histBtn) histBtn.addEventListener('click', function() {
-    state.view = 'history';
-    renderViews();
-  });
-
-  document.getElementById('themeBtn').addEventListener('click', function() {
-    state.theme = state.theme === 'dark' ? 'light' : 'dark';
-    saveState();
-    applyTheme();
-  });
-
-  document.getElementById('langToggle').addEventListener('click', function(e) {
-    var btn = e.target.closest('button[data-lang]');
-    if (!btn) return;
-    var newLang = btn.getAttribute('data-lang');
-    if (newLang === state.lang) return;
-    state.lang = newLang;
-    saveState();
-    renderI18n();
-    renderTimer();
-    renderStreams();
-    renderPreparations();
-    renderSessionEntry();
-    if (state.view === 'session') renderSessionView();
-  });
-
-  document.getElementById('timerBtn').addEventListener('click', function() {
-    if (state.timer.running) lapTimer();
-    else startTimer();
-  });
-
-  document.getElementById('resetBtn').addEventListener('click', resetTimer);
-
-  document.getElementById('addStreamBtn').addEventListener('click', function() {
-    if (state.streams.length >= 3) return;
-    state.streams.push({ id: Date.now(), before: '', after: '' });
-    renderStreams();
-    updateSpeedDisplay();
-  });
-
-  document.getElementById('manualSpeed').addEventListener('input', function(e) {
-    state.manualSpeed = Number(e.target.value) || 0;
-    saveState();
-    updateSpeedDisplay();
-  });
-
-  document.getElementById('manualSpeedVis').addEventListener('input', function(e) {
-    state.manualSpeed = Number(e.target.value) || 0;
-    var hidden = document.getElementById('manualSpeed');
-    if (hidden) hidden.value = state.manualSpeed || '';
-    saveState();
-    updateSpeedDisplay();
-  });
-
-  document.getElementById('addPrepBtn').addEventListener('click', function() {
-    var newId = Date.now();
-    state.preparations.push({ id: newId, name: '', norm: 250, canVolume: 5, active: true });
-    state.editingPrepId = newId;
-    renderPreparations();
-  });
-}
-
-init();
+});
+$$('[data-close]').forEach(b => b.addEventListener('click', closeOverlays));
+
+$('#btn-back').addEventListener('click', () => {
+  if (view === 'analytics') backToList();
+  else backToList();
+});
+$('#btn-menu').addEventListener('click', openMenu);
+$('#btn-edit-meta').addEventListener('click', openMetaModal);
+
+renderList();
+renderHeader();
+showView('list');
+document.addEventListener('pointerdown', () => { ac(); }, { once: true });
 </script>
 </body>
 </html>
