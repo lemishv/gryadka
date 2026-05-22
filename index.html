@@ -1295,6 +1295,7 @@ function openMenu() {
     <div class="menu-item" data-act="open-analytics"><span class="item-name">Підсумок по сортах і полях</span><span class="item-arrow">›</span></div>
     <div class="menu-item" data-act="export-fields"><span class="item-name">Експорт по полях (CSV)</span><span class="item-arrow">›</span></div>
     <div class="menu-item" data-act="export-varieties"><span class="item-name">Експорт по сортах (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="menu-item" data-act="export-pdf"><span class="item-name">Поділитися PDF</span><span class="item-arrow">›</span></div>
     <div class="modal-section-title">Резервна копія</div>
     <div class="menu-item" data-act="export-backup"><span class="item-name">Експорт бекапу (JSON)</span><span class="item-arrow">›</span></div>
     <div class="menu-item" data-act="import-backup"><span class="item-name">Імпорт бекапу (JSON)</span><span class="item-arrow">›</span></div>
@@ -1371,6 +1372,7 @@ function handleMenuAction(act, target) {
       break;
     case 'export-fields': exportFieldsCSV(); break;
     case 'export-varieties': exportVarietiesCSV(); break;
+    case 'export-pdf': exportFieldsPDF(); break;
     case 'export-log': exportLogCSV(); break;
     case 'export-backup': exportBackupJSON(); break;
     case 'import-backup': importBackupJSON(); break;
@@ -1667,6 +1669,139 @@ function exportLogCSV() {
   downloadCSV(`zhurnal-${stamp()}.csv`, rows);
   closeOverlays();
   showToast(`Збережено (${total} подій)`);
+}
+
+/* ===== PDF EXPORT ===== */
+const PDF_FONT_KEY = 'gryadka.font.noto-b64';
+const PDF_FONT_URL = 'https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@v2017-10-10-11-55-59/hinted/NotoSans-Regular.ttf';
+const JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+async function loadPDFFont() {
+  try { const c = localStorage.getItem(PDF_FONT_KEY); if (c) return c; } catch(e) {}
+  const resp = await fetch(PDF_FONT_URL);
+  if (!resp.ok) throw new Error('font fetch failed');
+  const buf = await resp.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let b = '';
+  for (let i = 0; i < bytes.length; i += 8192)
+    b += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+  const b64 = btoa(b);
+  try { localStorage.setItem(PDF_FONT_KEY, b64); } catch(e) {}
+  return b64;
+}
+
+function pdfBlockHeight(card) {
+  let h = 5.5;
+  if (card.meta.date) h += 5;
+  if (parseNum(card.meta.area) > 0) h += 5;
+  if (card.meta.seed) h += 5;
+  if (card.meta.loc && isUrl(card.meta.loc)) h += 5;
+  return h + 9;
+}
+
+async function exportFieldsPDF() {
+  closeOverlays();
+  if (!window.jspdf) {
+    showToast('Завантаження…');
+    try { await loadScript(JSPDF_URL); } catch(e) { showToast('Потрібна мережа для PDF'); return; }
+  }
+  let fontB64;
+  try { fontB64 = await loadPDFFont(); } catch(e) { showToast('Потрібна мережа (шрифт, один раз)'); return; }
+  showToast('Генерація PDF…');
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+  doc.addFileToVFS('NotoSans.ttf', fontB64);
+  doc.addFont('NotoSans.ttf', 'NotoSans', 'normal');
+  doc.setFont('NotoSans');
+
+  const ML = 20, MT = 22, MR = 20, PW = 210;
+  let y = MT;
+
+  // Заголовок
+  doc.setFontSize(18); doc.setTextColor(20);
+  doc.text('Грядка', ML, y);
+  const today = new Date().toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+  doc.setFontSize(9); doc.setTextColor(140);
+  doc.text(today, PW - MR, y, { align: 'right' });
+  y += 4;
+  doc.setDrawColor(200); doc.setLineWidth(0.3);
+  doc.line(ML, y, PW - MR, y);
+  y += 8;
+
+  // Картки
+  state.cards.forEach(card => {
+    if (y + pdfBlockHeight(card) > 277) { doc.addPage(); y = MT; }
+
+    // Назва
+    doc.setFontSize(12); doc.setTextColor(20);
+    doc.text(card.name, ML, y);
+    y += 5.5;
+
+    doc.setFontSize(9.5);
+    const LX = ML, VX = ML + 25;
+
+    if (card.meta.date) {
+      doc.setTextColor(120); doc.text('Дата:', LX, y);
+      doc.setTextColor(40);  doc.text(fmtDate(card.meta.date), VX, y);
+      y += 5;
+    }
+    const area = parseNum(card.meta.area);
+    if (area > 0) {
+      doc.setTextColor(120); doc.text('Площа:', LX, y);
+      doc.setTextColor(40);  doc.text(fmtNum(toDisplayArea(area)) + '\u00a0' + areaLabel(), VX, y);
+      y += 5;
+    }
+    if (card.meta.seed) {
+      doc.setTextColor(120); doc.text('Сорт:', LX, y);
+      doc.setTextColor(40);  doc.text(card.meta.seed, VX, y);
+      y += 5;
+    }
+    if (card.meta.loc && isUrl(card.meta.loc)) {
+      doc.setTextColor(120); doc.text('Локація:', LX, y);
+      const lbl = 'Google Maps \u203a';
+      doc.setTextColor(0, 102, 204); doc.text(lbl, VX, y);
+      doc.link(VX, y - 3.5, doc.getTextWidth(lbl), 4.5, { url: card.meta.loc });
+      doc.setTextColor(0);
+      y += 5;
+    }
+
+    y += 3;
+    doc.setDrawColor(220); doc.setLineWidth(0.2);
+    doc.line(ML, y, PW - MR, y);
+    y += 6;
+  });
+
+  // Пагінація
+  const total = doc.getNumberOfPages();
+  for (let p = 1; p <= total; p++) {
+    doc.setPage(p); doc.setFontSize(8); doc.setTextColor(160);
+    doc.text(p + ' / ' + total, PW / 2, 289, { align: 'center' });
+  }
+
+  // Шерінг / Download
+  const blob = doc.output('blob');
+  const fname = 'gryadka-' + stamp() + '.pdf';
+  const file = new File([blob], fname, { type: 'application/pdf' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'Грядка' }); return; } catch(e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+  showToast('PDF збережено в Downloads');
 }
 
 /* ===== JSON BACKUP ===== */
