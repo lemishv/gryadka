@@ -1698,15 +1698,6 @@ async function loadPDFFont() {
   return b64;
 }
 
-function pdfBlockHeight(card) {
-  let h = 5.5;
-  if (card.meta.date) h += 5;
-  if (parseNum(card.meta.area) > 0) h += 5;
-  if (card.meta.seed) h += 5;
-  if (card.meta.loc && isUrl(card.meta.loc)) h += 5;
-  return h + 9;
-}
-
 async function exportFieldsPDF() {
   closeOverlays();
   if (!window.jspdf) {
@@ -1723,71 +1714,118 @@ async function exportFieldsPDF() {
   doc.addFont('NotoSans.ttf', 'NotoSans', 'normal');
   doc.setFont('NotoSans');
 
-  const ML = 20, MT = 22, MR = 20, PW = 210;
-  let y = MT;
+  const ML = 20, MT = 22, MR = 20, PW = 210, PH_BOTTOM = 285;
+  const CONTENT_W = PW - ML - MR; // 170 mm
 
-  // Заголовок
+  // Колонки таблиці
+  const COLS = [
+    { label: 'Назва',    w: 56 },
+    { label: 'Локація',  w: 22 },
+    { label: 'Площа',    w: 22 },
+    { label: 'Сорт',     w: 32 },
+    { label: 'Дата',     w: 38 }
+  ];
+  const COL_X = []; { let cx = ML; for (const c of COLS) { COL_X.push(cx); cx += c.w; } }
+  const RIGHT = ML + CONTENT_W;
+  const CELL_PAD = 2;
+  const ROW_H = 8;
+  const HEADER_H = 9;
+
+  function truncFit(text, maxW) {
+    if (!text) return '';
+    if (doc.getTextWidth(text) <= maxW) return text;
+    let s = text;
+    while (s.length > 1 && doc.getTextWidth(s + '…') > maxW) s = s.slice(0, -1);
+    return s + '…';
+  }
+  function fmtDateShort(s) {
+    if (!s) return '';
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? `${m[3]}.${m[2]}.${m[1]}` : s;
+  }
+  function drawHeader(yStart) {
+    doc.setFillColor(238, 234, 226);
+    doc.rect(ML, yStart, CONTENT_W, HEADER_H, 'F');
+    doc.setFontSize(9);
+    doc.setTextColor(60);
+    COLS.forEach((c, i) => doc.text(c.label, COL_X[i] + CELL_PAD, yStart + 6));
+    doc.setDrawColor(170); doc.setLineWidth(0.3);
+    doc.line(ML, yStart + HEADER_H, RIGHT, yStart + HEADER_H);
+    return yStart + HEADER_H;
+  }
+
+  // ── Шапка документа ──
+  let y = MT;
   doc.setFontSize(18); doc.setTextColor(20);
   doc.text('Грядка', ML, y);
   const today = new Date().toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
   doc.setFontSize(9); doc.setTextColor(140);
   doc.text(today, PW - MR, y, { align: 'right' });
-  y += 4;
-  doc.setDrawColor(200); doc.setLineWidth(0.3);
-  doc.line(ML, y, PW - MR, y);
-  y += 8;
+  y += 6;
 
-  // Картки
-  state.cards.forEach(card => {
-    if (y + pdfBlockHeight(card) > 277) { doc.addPage(); y = MT; }
+  // ── Шапка таблиці ──
+  y = drawHeader(y);
+
+  // ── Рядки ──
+  doc.setFontSize(9);
+  state.cards.forEach((card, idx) => {
+    if (y + ROW_H > PH_BOTTOM) {
+      doc.addPage();
+      y = MT;
+      y = drawHeader(y);
+      doc.setFontSize(9);
+    }
+
+    // Зебра
+    if (idx % 2 === 1) {
+      doc.setFillColor(249, 246, 240);
+      doc.rect(ML, y, CONTENT_W, ROW_H, 'F');
+    }
+
+    const baseline = y + 5.5;
 
     // Назва
-    doc.setFontSize(12); doc.setTextColor(20);
-    doc.text(card.name, ML, y);
-    y += 5.5;
+    doc.setTextColor(20);
+    doc.text(truncFit(card.name, COLS[0].w - CELL_PAD * 2), COL_X[0] + CELL_PAD, baseline);
 
-    doc.setFontSize(9.5);
-    const LX = ML, VX = ML + 25;
-
-    if (card.meta.date) {
-      doc.setTextColor(120); doc.text('Дата:', LX, y);
-      doc.setTextColor(40);  doc.text(fmtDate(card.meta.date), VX, y);
-      y += 5;
-    }
-    const area = parseNum(card.meta.area);
-    if (area > 0) {
-      doc.setTextColor(120); doc.text('Площа:', LX, y);
-      doc.setTextColor(40);  doc.text(fmtNum(toDisplayArea(area)) + '\u00a0' + areaLabel(), VX, y);
-      y += 5;
-    }
-    if (card.meta.seed) {
-      doc.setTextColor(120); doc.text('Сорт:', LX, y);
-      doc.setTextColor(40);  doc.text(card.meta.seed, VX, y);
-      y += 5;
-    }
+    // Локація (посилання)
     if (card.meta.loc && isUrl(card.meta.loc)) {
-      doc.setTextColor(120); doc.text('Локація:', LX, y);
-      const lbl = 'Google Maps \u203a';
-      doc.setTextColor(0, 102, 204); doc.text(lbl, VX, y);
-      doc.link(VX, y - 3.5, doc.getTextWidth(lbl), 4.5, { url: card.meta.loc });
-      doc.setTextColor(0);
-      y += 5;
+      const lx = COL_X[1] + CELL_PAD;
+      const lbl = 'Maps \u203a';
+      doc.setTextColor(0, 102, 204);
+      doc.text(lbl, lx, baseline);
+      doc.link(lx, y + 1, doc.getTextWidth(lbl), ROW_H - 2, { url: card.meta.loc });
+    } else {
+      doc.setTextColor(180); doc.text('—', COL_X[1] + CELL_PAD, baseline);
     }
 
-    y += 3;
-    doc.setDrawColor(220); doc.setLineWidth(0.2);
-    doc.line(ML, y, PW - MR, y);
-    y += 6;
+    // Площа
+    doc.setTextColor(20);
+    const area = parseNum(card.meta.area);
+    const areaStr = area > 0 ? fmtNum(toDisplayArea(area)) + '\u00a0' + areaLabel() : '—';
+    doc.text(areaStr, COL_X[2] + CELL_PAD, baseline);
+
+    // Сорт
+    doc.text(truncFit(card.meta.seed || '—', COLS[3].w - CELL_PAD * 2), COL_X[3] + CELL_PAD, baseline);
+
+    // Дата
+    doc.text(fmtDateShort(card.meta.date) || '—', COL_X[4] + CELL_PAD, baseline);
+
+    // Тонка лінія між рядками
+    doc.setDrawColor(225); doc.setLineWidth(0.2);
+    doc.line(ML, y + ROW_H, RIGHT, y + ROW_H);
+
+    y += ROW_H;
   });
 
-  // Пагінація
+  // ── Пагінація ──
   const total = doc.getNumberOfPages();
   for (let p = 1; p <= total; p++) {
     doc.setPage(p); doc.setFontSize(8); doc.setTextColor(160);
     doc.text(p + ' / ' + total, PW / 2, 289, { align: 'center' });
   }
 
-  // Шерінг / Download
+  // ── Шерінг / Download ──
   const blob = doc.output('blob');
   const fname = 'gryadka-' + stamp() + '.pdf';
   const file = new File([blob], fname, { type: 'application/pdf' });
