@@ -1295,6 +1295,9 @@ function openMenu() {
     <div class="menu-item" data-act="open-analytics"><span class="item-name">Підсумок по сортах і полях</span><span class="item-arrow">›</span></div>
     <div class="menu-item" data-act="export-fields"><span class="item-name">Експорт по полях (CSV)</span><span class="item-arrow">›</span></div>
     <div class="menu-item" data-act="export-varieties"><span class="item-name">Експорт по сортах (CSV)</span><span class="item-arrow">›</span></div>
+    <div class="modal-section-title">Резервна копія</div>
+    <div class="menu-item" data-act="export-backup"><span class="item-name">Експорт бекапу (JSON)</span><span class="item-arrow">›</span></div>
+    <div class="menu-item" data-act="import-backup"><span class="item-name">Імпорт бекапу (JSON)</span><span class="item-arrow">›</span></div>
     <div class="modal-section-title">Журнал часу</div>
     <div class="toggle-row" style="border-top:none;padding-top:8px">
       <div>
@@ -1369,6 +1372,8 @@ function handleMenuAction(act, target) {
     case 'export-fields': exportFieldsCSV(); break;
     case 'export-varieties': exportVarietiesCSV(); break;
     case 'export-log': exportLogCSV(); break;
+    case 'export-backup': exportBackupJSON(); break;
+    case 'import-backup': importBackupJSON(); break;
     case 'set-area-unit':
       state.areaUnit = target.dataset.unit;
       save();
@@ -1662,6 +1667,70 @@ function exportLogCSV() {
   downloadCSV(`zhurnal-${stamp()}.csv`, rows);
   closeOverlays();
   showToast(`Збережено (${total} подій)`);
+}
+
+/* ===== JSON BACKUP ===== */
+function exportBackupJSON() {
+  const data = JSON.stringify(state);
+  const blob = new Blob([data], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `gryadka-backup-${stamp()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+  closeOverlays();
+  showToast(`Бекап збережено (${state.cards.length} полів)`);
+}
+
+function importBackupJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json,.json';
+  input.style.display = 'none';
+  document.body.appendChild(input);
+  input.addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    input.remove();
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      let data;
+      try {
+        data = JSON.parse(ev.target.result);
+      } catch (err) {
+        showToast('Файл не вдалося прочитати: не JSON');
+        return;
+      }
+      if (!data || !data.schema || !Array.isArray(data.schema.metaFields)
+          || !Array.isArray(data.schema.counters) || !Array.isArray(data.cards)) {
+        showToast('Файл не схожий на бекап Грядки');
+        return;
+      }
+      const cardsCount = data.cards.length;
+      const eventsCount = data.cards.reduce((n, c) => n + ((c.events && c.events.length) || 0), 0);
+      confirmModal(
+        `Замінити поточні дані на імпортовані? Знайдено: ${cardsCount} полів, ${eventsCount} подій. Поточний стан збережеться як резервний.`,
+        () => {
+          try { Store.set(KEY + '.backup-before-import', state); } catch(e) {}
+          const migrated = migrate(data);
+          if (!migrated.cards.find(c => c.id === migrated.activeCardId)) {
+            migrated.activeCardId = migrated.cards[0] ? migrated.cards[0].id : null;
+          }
+          state = migrated;
+          save();
+          closeOverlays();
+          backToList();
+          showToast(`Імпортовано ${cardsCount} полів`);
+        },
+        { okLabel: 'Імпортувати', primary: true }
+      );
+    };
+    reader.onerror = () => showToast('Помилка читання файлу');
+    reader.readAsText(file);
+  });
+  input.click();
 }
 
 /* ===== OVERLAYS ===== */
